@@ -1,7 +1,7 @@
 'use client'
 
 import { useAuth } from '@/lib/auth-context'
-import { AlertCircle, TrendingUp, Users, MessageSquare, Zap, BarChart3, ClipboardList, ArrowRight } from 'lucide-react'
+import { AlertCircle, TrendingUp, Users, MessageSquare, Zap, BarChart3, ClipboardList, ArrowRight, CheckCircle2 } from 'lucide-react'
 import Link from 'next/link'
 
 export default function DashboardPage() {
@@ -27,261 +27,396 @@ export default function DashboardPage() {
 
 function StudentDashboard({ user }: { user: any }) {
   const stats = [
-    { label: 'Open Issues', value: '2', icon: AlertCircle, color: 'from-cyan-500/20 to-cyan-400/10', accent: 'text-cyan-600' },
-    { label: 'Announcements', value: '12', icon: MessageSquare, color: 'from-purple-500/20 to-purple-400/10', accent: 'text-purple-600' },
-    { label: 'Hostel Items', value: '5', icon: Users, color: 'from-blue-500/20 to-blue-400/10', accent: 'text-blue-600' }
+    { label: 'Open Issues', value: '2', icon: AlertCircle, color: '#014b89', bgColor: 'rgba(1, 75, 137, 0.1)' },
+    { label: 'Announcements', value: '12', icon: MessageSquare, color: '#f26918', bgColor: 'rgba(242, 105, 24, 0.1)' },
+    { label: 'Hostel Items', value: '5', icon: CheckCircle2, color: '#014b89', bgColor: 'rgba(1, 75, 137, 0.1)' }
   ]
 
   const quickActions = [
-    { title: 'Report Issue', description: 'Tell us about any problems', icon: AlertCircle, href: '/dashboard/issues' },
-    { title: 'View Announcements', description: 'Check latest hostel updates', icon: MessageSquare, href: '/dashboard/announcements' },
-    { title: 'Lost & Found', description: 'Browse lost items', icon: Zap, href: '/dashboard/lost-found' }
+    { title: 'Report Issue', description: 'Tell us about any problems', icon: AlertCircle, href: '/dashboard/issues', color: '#014b89' },
+    { title: 'View Announcements', description: 'Check latest hostel updates', icon: MessageSquare, href: '/dashboard/announcements', color: '#f26918' },
+    { title: 'Lost & Found', description: 'Browse lost items', icon: Zap, href: '/dashboard/lost-found', color: '#014b89' }
   ]
 
   return (
-    <div className="max-w-6xl mx-auto px-3 pt-3 pb-24 md:px-8 md:pt-8 md:pb-12">
-      <div className="mb-6 md:mb-8 animate-fade-in">
-        <h1 className="text-2xl md:text-4xl font-bold text-gray-900 mb-1">Welcome, {user.name}</h1>
-        <p className="text-xs md:text-base text-gray-600">Room {user.roomNumber} • {user.hostelName}</p>
-      </div>
-
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 gap-3 md:grid-cols-3 md:gap-6 mb-6 md:mb-8">
-        {stats.map((stat, i) => {
-          const Icon = stat.icon
-          return (
-            <div
-              key={stat.label}
-              className="bg-gradient-to-br from-white to-gray-50 border border-gray-200/50 rounded-xl p-4 md:p-6 hover:border-gray-300 hover:shadow-lg transition-all duration-300 group"
-              style={{ animationDelay: `${i * 0.1}s` }}
-            >
-              <div className="flex items-start justify-between mb-3">
-                <div className={`p-2 md:p-3 rounded-lg bg-gradient-to-br ${stat.color}`}>
-                  <Icon className={`w-5 h-5 md:w-6 md:h-6 ${stat.accent}`} />
-                </div>
-              </div>
-              <p className="text-gray-600 text-xs md:text-sm mb-2">{stat.label}</p>
-              <p className="text-2xl md:text-4xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">{stat.value}</p>
-            </div>
-          )
-        })}
-      </div>
-
-      {/* Quick Actions */}
-      <div className="bg-gradient-to-br from-white to-gray-50 border border-gray-200/50 rounded-xl md:rounded-2xl p-4 md:p-8">
-        <h2 className="text-lg md:text-2xl font-bold text-gray-900 mb-4 md:mb-6">Quick Actions</h2>
-        <div className="grid grid-cols-1 gap-3 md:grid-cols-3 md:gap-4">
-          {quickActions.map((action, i) => {
-            const Icon = action.icon
-            return (
-              <Link key={action.href} href={action.href}>
-                <div className="p-4 md:p-6 rounded-lg md:rounded-xl bg-gradient-to-br from-gray-50 to-gray-100/50 border border-gray-200/50 hover:border-cyan-300 hover:shadow-lg transition-all duration-300 group cursor-pointer h-full"
-                  style={{ animationDelay: `${i * 0.1}s` }}>
-                  <div className="flex items-start justify-between mb-2 md:mb-3">
-                    <div className="w-9 h-9 md:w-10 md:h-10 bg-gradient-to-br from-cyan-500/20 to-purple-500/20 rounded-lg flex items-center justify-center group-hover:shadow-lg group-hover:shadow-cyan-500/30 transition-all duration-300">
-                      <Icon className="w-4 h-4 md:w-5 md:h-5 text-cyan-600" />
-                    </div>
-                    <ArrowRight className="w-3 h-3 md:w-4 md:h-4 text-gray-400 group-hover:text-cyan-500 transition-colors" />
-                  </div>
-                  <p className="font-semibold text-sm md:text-base text-gray-900 group-hover:text-cyan-600 transition-colors">{action.title}</p>
-                  <p className="text-xs md:text-sm text-gray-600 mt-1">{action.description}</p>
-                </div>
-              </Link>
-            )
-          })}
-        </div>
-      </div>
-
+    <div className="min-h-screen bg-white relative overflow-hidden">
       <style jsx>{`
         @keyframes fadeIn {
           from {
             opacity: 0;
-            transform: translateY(10px);
+            transform: translateY(20px);
           }
           to {
             opacity: 1;
             transform: translateY(0);
           }
         }
-
+        @keyframes slideIn {
+          from {
+            opacity: 0;
+            transform: translateX(-20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
+        }
         .animate-fade-in {
           animation: fadeIn 0.6s ease-out;
         }
+        .animate-slide-in {
+          animation: slideIn 0.6s ease-out;
+        }
       `}</style>
+
+      {/* Background */}
+      <div
+        className="absolute inset-0 z-0"
+        style={{
+          backgroundImage: `
+            linear-gradient(to right, rgba(1, 75, 137, 0.03) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(1, 75, 137, 0.03) 1px, transparent 1px)
+          `,
+          backgroundSize: "80px 80px",
+        }}
+      />
+
+      <div className="max-w-6xl mx-auto px-4 md:px-8 pt-6 md:pt-12 pb-24 relative z-10">
+        {/* Header */}
+        <div className="mb-8 md:mb-12 animate-fade-in">
+          <h1 className="text-3xl md:text-5xl font-bold mb-2" style={{ color: '#014b89' }}>
+            Welcome back, {user.name}
+          </h1>
+          <p className="text-base md:text-lg text-gray-600">Room {user.roomNumber} • {user.hostelName}</p>
+        </div>
+
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-8 md:mb-12">
+          {stats.map((stat, i) => {
+            const Icon = stat.icon
+            return (
+              <div
+                key={stat.label}
+                className="bg-white border-2 border-gray-100 rounded-2xl p-6 md:p-8 hover:border-gray-200 hover:shadow-xl transition-all duration-300 animate-slide-in"
+                style={{ animationDelay: `${i * 0.1}s` }}
+              >
+                <div className="flex items-start justify-between mb-4">
+                  <div 
+                    className="w-14 h-14 rounded-xl flex items-center justify-center shadow-lg"
+                    style={{ background: stat.bgColor }}
+                  >
+                    <Icon className="w-7 h-7" style={{ color: stat.color }} />
+                  </div>
+                </div>
+                <p className="text-sm font-semibold text-gray-600 mb-2 uppercase tracking-wide">{stat.label}</p>
+                <p className="text-4xl md:text-5xl font-bold" style={{ color: '#014b89' }}>{stat.value}</p>
+              </div>
+            )
+          })}
+        </div>
+
+        {/* Quick Actions */}
+        <div className="bg-white border-2 border-gray-100 rounded-3xl p-6 md:p-10 shadow-lg animate-fade-in" style={{ animationDelay: '0.3s' }}>
+          <h2 className="text-2xl md:text-3xl font-bold mb-6 md:mb-8" style={{ color: '#014b89' }}>Quick Actions</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+            {quickActions.map((action, i) => {
+              const Icon = action.icon
+              return (
+                <Link key={action.href} href={action.href}>
+                  <div 
+                    className="p-6 md:p-8 rounded-2xl border-2 border-gray-100 hover:shadow-xl transition-all duration-300 group cursor-pointer h-full"
+                    style={{ background: 'white' }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.borderColor = action.color
+                      e.currentTarget.style.background = `${action.color}03`
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.borderColor = '#f3f4f6'
+                      e.currentTarget.style.background = 'white'
+                    }}
+                  >
+                    <div className="flex items-start justify-between mb-4">
+                      <div 
+                        className="w-12 h-12 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300"
+                        style={{ background: `${action.color}15` }}
+                      >
+                        <Icon className="w-6 h-6" style={{ color: action.color }} />
+                      </div>
+                      <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-gray-900 transition-colors" style={{ color: action.color }} />
+                    </div>
+                    <p className="font-bold text-lg text-gray-900 mb-2">{action.title}</p>
+                    <p className="text-sm text-gray-600">{action.description}</p>
+                  </div>
+                </Link>
+              )
+            })}
+          </div>
+        </div>
+      </div>
     </div>
   )
 }
 
 function CaretakerDashboard({ user }: { user: any }) {
   const stats = [
-    { label: 'Active Issues', value: '8', icon: AlertCircle, color: 'from-cyan-500/20 to-cyan-400/10', accent: 'text-cyan-600' },
-    { label: 'Residents', value: '45', icon: Users, color: 'from-purple-500/20 to-purple-400/10', accent: 'text-purple-600' },
-    { label: 'Resolved Today', value: '3', icon: TrendingUp, color: 'from-green-500/20 to-green-400/10', accent: 'text-green-600' }
+    { label: 'Active Issues', value: '8', icon: AlertCircle, color: '#f26918', bgColor: 'rgba(242, 105, 24, 0.1)' },
+    { label: 'Residents', value: '45', icon: Users, color: '#014b89', bgColor: 'rgba(1, 75, 137, 0.1)' },
+    { label: 'Resolved Today', value: '3', icon: TrendingUp, color: '#f26918', bgColor: 'rgba(242, 105, 24, 0.1)' }
   ]
 
   const managementLinks = [
-    { title: 'Manage Issues', description: 'View and resolve issues', icon: ClipboardList, href: '/dashboard/issues/caretaker', delay: 0 },
-    { title: 'Residents', description: 'Manage resident information', icon: Users, href: '/dashboard/residents', delay: 0.1 },
-    { title: 'Announcements', description: 'Post hostel updates', icon: MessageSquare, href: '/dashboard/announcements', delay: 0.2 }
+    { title: 'Manage Issues', description: 'View and resolve issues', icon: ClipboardList, href: '/dashboard/issues/caretaker', color: '#f26918' },
+    { title: 'Residents', description: 'Manage resident information', icon: Users, href: '/dashboard/residents', color: '#014b89' },
+    { title: 'Announcements', description: 'Post hostel updates', icon: MessageSquare, href: '/dashboard/announcements', color: '#f26918' }
   ]
 
   return (
-    <div className="max-w-6xl mx-auto px-3 pt-3 pb-24 md:px-8 md:pt-8 md:pb-12">
-      <div className="mb-6 md:mb-8 animate-fade-in">
-        <h1 className="text-2xl md:text-4xl font-bold text-gray-900 mb-1">Hostel Management</h1>
-        <p className="text-xs md:text-base text-gray-600">{user.hostelName} • Caretaker Dashboard</p>
-      </div>
-
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 gap-3 md:grid-cols-3 md:gap-6 mb-6 md:mb-8">
-        {stats.map((stat, i) => {
-          const Icon = stat.icon
-          return (
-            <div
-              key={stat.label}
-              className="bg-gradient-to-br from-white to-gray-50 border border-gray-200/50 rounded-2xl p-6 hover:border-gray-300 hover:shadow-lg transition-all duration-300"
-              style={{ animationDelay: `${i * 0.1}s` }}
-            >
-              <div className="flex items-start justify-between mb-4">
-                <div className={`p-3 rounded-lg bg-gradient-to-br ${stat.color}`}>
-                  <Icon className={`w-6 h-6 ${stat.accent}`} />
-                </div>
-              </div>
-              <p className="text-gray-600 text-sm mb-2">{stat.label}</p>
-              <p className="text-4xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">{stat.value}</p>
-            </div>
-          )
-        })}
-      </div>
-
-      {/* Management Tools */}
-      <div className="bg-gradient-to-br from-white to-gray-50 border border-gray-200/50 rounded-2xl p-6 md:p-8">
-        <h2 className="text-2xl font-bold text-gray-900 mb-6">Management Tools</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-          {managementLinks.map((link) => {
-            const Icon = link.icon
-            return (
-              <Link key={link.href} href={link.href}>
-                <div className="p-6 rounded-xl bg-gradient-to-br from-gray-50 to-gray-100/50 border border-gray-200/50 hover:border-cyan-300 hover:shadow-lg transition-all duration-300 group cursor-pointer h-full"
-                  style={{ animationDelay: `${link.delay}s` }}>
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="w-10 h-10 bg-gradient-to-br from-cyan-500/20 to-purple-500/20 rounded-lg flex items-center justify-center group-hover:shadow-lg group-hover:shadow-cyan-500/30 transition-all duration-300">
-                      <Icon className="w-5 h-5 text-cyan-600" />
-                    </div>
-                    <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-cyan-500 transition-colors" />
-                  </div>
-                  <p className="font-semibold text-gray-900 group-hover:text-cyan-600 transition-colors">{link.title}</p>
-                  <p className="text-sm text-gray-600 mt-1">{link.description}</p>
-                </div>
-              </Link>
-            )
-          })}
-        </div>
-      </div>
-
+    <div className="min-h-screen bg-white relative overflow-hidden">
       <style jsx>{`
         @keyframes fadeIn {
           from {
             opacity: 0;
-            transform: translateY(10px);
+            transform: translateY(20px);
           }
           to {
             opacity: 1;
             transform: translateY(0);
           }
         }
-
+        @keyframes slideIn {
+          from {
+            opacity: 0;
+            transform: translateX(-20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
+        }
         .animate-fade-in {
           animation: fadeIn 0.6s ease-out;
         }
+        .animate-slide-in {
+          animation: slideIn 0.6s ease-out;
+        }
       `}</style>
+
+      {/* Background */}
+      <div
+        className="absolute inset-0 z-0"
+        style={{
+          backgroundImage: `
+            linear-gradient(to right, rgba(242, 105, 24, 0.03) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(242, 105, 24, 0.03) 1px, transparent 1px)
+          `,
+          backgroundSize: "80px 80px",
+        }}
+      />
+
+      <div className="max-w-6xl mx-auto px-4 md:px-8 pt-6 md:pt-12 pb-24 relative z-10">
+        {/* Header */}
+        <div className="mb-8 md:mb-12 animate-fade-in">
+          <h1 className="text-3xl md:text-5xl font-bold mb-2" style={{ color: '#014b89' }}>
+            Hostel Management
+          </h1>
+          <p className="text-base md:text-lg text-gray-600">{user.hostelName} • <span style={{ color: '#f26918' }}>Caretaker Dashboard</span></p>
+        </div>
+
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-8 md:mb-12">
+          {stats.map((stat, i) => {
+            const Icon = stat.icon
+            return (
+              <div
+                key={stat.label}
+                className="bg-white border-2 border-gray-100 rounded-2xl p-6 md:p-8 hover:border-gray-200 hover:shadow-xl transition-all duration-300 animate-slide-in"
+                style={{ animationDelay: `${i * 0.1}s` }}
+              >
+                <div className="flex items-start justify-between mb-4">
+                  <div 
+                    className="w-14 h-14 rounded-xl flex items-center justify-center shadow-lg"
+                    style={{ background: stat.bgColor }}
+                  >
+                    <Icon className="w-7 h-7" style={{ color: stat.color }} />
+                  </div>
+                </div>
+                <p className="text-sm font-semibold text-gray-600 mb-2 uppercase tracking-wide">{stat.label}</p>
+                <p className="text-4xl md:text-5xl font-bold" style={{ color: stat.color }}>{stat.value}</p>
+              </div>
+            )
+          })}
+        </div>
+
+        {/* Management Tools */}
+        <div className="bg-white border-2 border-gray-100 rounded-3xl p-6 md:p-10 shadow-lg animate-fade-in" style={{ animationDelay: '0.3s' }}>
+          <h2 className="text-2xl md:text-3xl font-bold mb-6 md:mb-8" style={{ color: '#014b89' }}>Management Tools</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+            {managementLinks.map((link, i) => {
+              const Icon = link.icon
+              return (
+                <Link key={link.href} href={link.href}>
+                  <div 
+                    className="p-6 md:p-8 rounded-2xl border-2 border-gray-100 hover:shadow-xl transition-all duration-300 group cursor-pointer h-full"
+                    style={{ background: 'white' }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.borderColor = link.color
+                      e.currentTarget.style.background = `${link.color}03`
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.borderColor = '#f3f4f6'
+                      e.currentTarget.style.background = 'white'
+                    }}
+                  >
+                    <div className="flex items-start justify-between mb-4">
+                      <div 
+                        className="w-12 h-12 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300"
+                        style={{ background: `${link.color}15` }}
+                      >
+                        <Icon className="w-6 h-6" style={{ color: link.color }} />
+                      </div>
+                      <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-gray-900 transition-colors" style={{ color: link.color }} />
+                    </div>
+                    <p className="font-bold text-lg text-gray-900 mb-2">{link.title}</p>
+                    <p className="text-sm text-gray-600">{link.description}</p>
+                  </div>
+                </Link>
+              )
+            })}
+          </div>
+        </div>
+      </div>
     </div>
   )
 }
 
 function AdminDashboard({ user }: { user: any }) {
   const stats = [
-    { label: 'Total Issues', value: '124', icon: AlertCircle, color: 'from-cyan-500/20 to-cyan-400/10', accent: 'text-cyan-600' },
-    { label: 'Total Users', value: '2,450', icon: Users, color: 'from-purple-500/20 to-purple-400/10', accent: 'text-purple-600' },
-    { label: 'Resolution Rate', value: '94%', icon: TrendingUp, color: 'from-green-500/20 to-green-400/10', accent: 'text-green-600' }
+    { label: 'Total Issues', value: '124', icon: AlertCircle, color: '#014b89', bgColor: 'rgba(1, 75, 137, 0.1)' },
+    { label: 'Total Users', value: '2,450', icon: Users, color: '#f26918', bgColor: 'rgba(242, 105, 24, 0.1)' },
+    { label: 'Resolution Rate', value: '94%', icon: TrendingUp, color: '#014b89', bgColor: 'rgba(1, 75, 137, 0.1)' }
   ]
 
   const adminTools = [
-    { title: 'Analytics', description: 'System-wide metrics', icon: BarChart3, href: '/dashboard/analytics', delay: 0 },
-    { title: 'Management', description: 'User & system control', icon: ClipboardList, href: '/dashboard/management', delay: 0.1 },
-    { title: 'Announcements', description: 'Broadcast messages', icon: MessageSquare, href: '/dashboard/announcements', delay: 0.2 }
+    { title: 'Analytics', description: 'System-wide metrics', icon: BarChart3, href: '/dashboard/analytics', color: '#014b89' },
+    { title: 'Management', description: 'User & system control', icon: ClipboardList, href: '/dashboard/management', color: '#f26918' },
+    { title: 'Announcements', description: 'Broadcast messages', icon: MessageSquare, href: '/dashboard/announcements', color: '#014b89' }
   ]
 
   return (
-    <div className="max-w-6xl mx-auto px-3 pt-3 pb-24 md:px-8 md:pt-8 md:pb-12">
-      <div className="mb-6 md:mb-8 animate-fade-in">
-        <h1 className="text-2xl md:text-4xl font-bold text-gray-900 mb-1">System Administration</h1>
-        <p className="text-xs md:text-base text-gray-600">Administrator Dashboard • Full System Access</p>
-      </div>
-
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 gap-3 md:grid-cols-3 md:gap-6 mb-6 md:mb-8">
-        {stats.map((stat, i) => {
-          const Icon = stat.icon
-          return (
-            <div
-              key={stat.label}
-              className="bg-gradient-to-br from-white to-gray-50 border border-gray-200/50 rounded-2xl p-6 hover:border-gray-300 hover:shadow-lg transition-all duration-300"
-              style={{ animationDelay: `${i * 0.1}s` }}
-            >
-              <div className="flex items-start justify-between mb-4">
-                <div className={`p-3 rounded-lg bg-gradient-to-br ${stat.color}`}>
-                  <Icon className={`w-6 h-6 ${stat.accent}`} />
-                </div>
-              </div>
-              <p className="text-gray-600 text-sm mb-2">{stat.label}</p>
-              <p className="text-4xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">{stat.value}</p>
-            </div>
-          )
-        })}
-      </div>
-
-      {/* Admin Controls */}
-      <div className="bg-gradient-to-br from-white to-gray-50 border border-gray-200/50 rounded-xl md:rounded-2xl p-4 md:p-8">
-        <h2 className="text-lg md:text-2xl font-bold text-gray-900 mb-4 md:mb-6">Admin Controls</h2>
-        <div className="grid grid-cols-1 gap-3 md:grid-cols-3 md:gap-4">
-          {adminTools.map((tool) => {
-            const Icon = tool.icon
-            return (
-              <Link key={tool.href} href={tool.href}>
-                <div className="p-6 rounded-xl bg-gradient-to-br from-gray-50 to-gray-100/50 border border-gray-200/50 hover:border-cyan-300 hover:shadow-lg transition-all duration-300 group cursor-pointer h-full"
-                  style={{ animationDelay: `${tool.delay}s` }}>
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="w-10 h-10 bg-gradient-to-br from-cyan-500/20 to-purple-500/20 rounded-lg flex items-center justify-center group-hover:shadow-lg group-hover:shadow-cyan-500/30 transition-all duration-300">
-                      <Icon className="w-5 h-5 text-cyan-600" />
-                    </div>
-                    <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-cyan-500 transition-colors" />
-                  </div>
-                  <p className="font-semibold text-gray-900 group-hover:text-cyan-600 transition-colors">{tool.title}</p>
-                  <p className="text-sm text-gray-600 mt-1">{tool.description}</p>
-                </div>
-              </Link>
-            )
-          })}
-        </div>
-      </div>
-
+    <div className="min-h-screen bg-white relative overflow-hidden">
       <style jsx>{`
         @keyframes fadeIn {
           from {
             opacity: 0;
-            transform: translateY(10px);
+            transform: translateY(20px);
           }
           to {
             opacity: 1;
             transform: translateY(0);
           }
         }
-
+        @keyframes slideIn {
+          from {
+            opacity: 0;
+            transform: translateX(-20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
+        }
         .animate-fade-in {
           animation: fadeIn 0.6s ease-out;
         }
+        .animate-slide-in {
+          animation: slideIn 0.6s ease-out;
+        }
       `}</style>
+
+      {/* Background */}
+      <div
+        className="absolute inset-0 z-0"
+        style={{
+          backgroundImage: `
+            linear-gradient(to right, rgba(1, 75, 137, 0.03) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(1, 75, 137, 0.03) 1px, transparent 1px)
+          `,
+          backgroundSize: "80px 80px",
+        }}
+      />
+
+      <div className="max-w-6xl mx-auto px-4 md:px-8 pt-6 md:pt-12 pb-24 relative z-10">
+        {/* Header */}
+        <div className="mb-8 md:mb-12 animate-fade-in">
+          <h1 className="text-3xl md:text-5xl font-bold mb-2" style={{ color: '#014b89' }}>
+            System Administration
+          </h1>
+          <p className="text-base md:text-lg text-gray-600">Administrator Dashboard • <span style={{ color: '#f26918' }}>Full System Access</span></p>
+        </div>
+
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-8 md:mb-12">
+          {stats.map((stat, i) => {
+            const Icon = stat.icon
+            return (
+              <div
+                key={stat.label}
+                className="bg-white border-2 border-gray-100 rounded-2xl p-6 md:p-8 hover:border-gray-200 hover:shadow-xl transition-all duration-300 animate-slide-in"
+                style={{ animationDelay: `${i * 0.1}s` }}
+              >
+                <div className="flex items-start justify-between mb-4">
+                  <div 
+                    className="w-14 h-14 rounded-xl flex items-center justify-center shadow-lg"
+                    style={{ background: stat.bgColor }}
+                  >
+                    <Icon className="w-7 h-7" style={{ color: stat.color }} />
+                  </div>
+                </div>
+                <p className="text-sm font-semibold text-gray-600 mb-2 uppercase tracking-wide">{stat.label}</p>
+                <p className="text-4xl md:text-5xl font-bold" style={{ color: stat.color }}>{stat.value}</p>
+              </div>
+            )
+          })}
+        </div>
+
+        {/* Admin Controls */}
+        <div className="bg-white border-2 border-gray-100 rounded-3xl p-6 md:p-10 shadow-lg animate-fade-in" style={{ animationDelay: '0.3s' }}>
+          <h2 className="text-2xl md:text-3xl font-bold mb-6 md:mb-8" style={{ color: '#014b89' }}>Admin Controls</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+            {adminTools.map((tool, i) => {
+              const Icon = tool.icon
+              return (
+                <Link key={tool.href} href={tool.href}>
+                  <div 
+                    className="p-6 md:p-8 rounded-2xl border-2 border-gray-100 hover:shadow-xl transition-all duration-300 group cursor-pointer h-full"
+                    style={{ background: 'white' }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.borderColor = tool.color
+                      e.currentTarget.style.background = `${tool.color}03`
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.borderColor = '#f3f4f6'
+                      e.currentTarget.style.background = 'white'
+                    }}
+                  >
+                    <div className="flex items-start justify-between mb-4">
+                      <div 
+                        className="w-12 h-12 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300"
+                        style={{ background: `${tool.color}15` }}
+                      >
+                        <Icon className="w-6 h-6" style={{ color: tool.color }} />
+                      </div>
+                      <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-gray-900 transition-colors" style={{ color: tool.color }} />
+                    </div>
+                    <p className="font-bold text-lg text-gray-900 mb-2">{tool.title}</p>
+                    <p className="text-sm text-gray-600">{tool.description}</p>
+                  </div>
+                </Link>
+              )
+            })}
+          </div>
+        </div>
+      </div>
     </div>
   )
 }

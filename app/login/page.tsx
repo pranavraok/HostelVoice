@@ -4,10 +4,11 @@ import React from "react"
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useAuth, type UserRole } from '@/lib/auth-context'
-import { Lock, Mail, Home, Loader2, AlertCircle, Check } from 'lucide-react'
+import { Lock, Mail, Loader2, AlertCircle, Check, Users, UserCheck, Shield, ArrowRight } from 'lucide-react'
 
 const DEMO_CREDENTIALS = [
   {
@@ -15,21 +16,27 @@ const DEMO_CREDENTIALS = [
     email: 'student@hostelvoice.com',
     password: 'password123',
     title: 'Student',
-    description: 'View dashboard & report issues'
+    description: 'View dashboard & report issues',
+    icon: Users,
+    color: '#014b89'
   },
   {
     role: 'caretaker' as UserRole,
     email: 'caretaker@hostelvoice.com',
     password: 'password123',
     title: 'Caretaker',
-    description: 'Manage operations'
+    description: 'Manage operations',
+    icon: UserCheck,
+    color: '#014b89'
   },
   {
     role: 'admin' as UserRole,
     email: 'admin@hostelvoice.com',
     password: 'password123',
     title: 'Administrator',
-    description: 'Full analytics'
+    description: 'Full analytics',
+    icon: Shield,
+    color: '#014b89'
   }
 ]
 
@@ -57,159 +64,8 @@ export default function LoginPage() {
     }
   }
 
-
-
   return (
-    <main className="min-h-screen bg-gray-50 md:bg-gradient-to-br md:from-white md:via-blue-50/30 md:to-white md:flex md:items-center md:justify-center px-0 md:px-4 py-0 md:py-8">
-      {/* Animated background elements */}
-      <div className="hidden md:block absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-20 left-10 w-96 h-96 bg-gradient-to-br from-cyan-400/10 to-transparent rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-20 right-10 w-96 h-96 bg-gradient-to-br from-purple-400/10 to-transparent rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
-      </div>
-
-      <div className="w-full max-w-md relative z-10 md:pb-0">
-        {/* Mobile Hero */}
-        <div className="md:hidden bg-gradient-to-r from-cyan-500 to-purple-600 text-white px-6 pt-10 pb-16 rounded-b-3xl shadow-lg">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-11 h-11 bg-white/15 rounded-xl flex items-center justify-center shadow-inner">
-              <span className="text-white font-bold text-lg">HV</span>
-            </div>
-            <div>
-              <p className="text-xs uppercase tracking-[0.2em] text-white/80 font-semibold">HostelVoice</p>
-              <p className="text-lg font-semibold leading-tight">Manage hostel life on the go</p>
-            </div>
-          </div>
-          <p className="text-sm text-white/80 max-w-xs">Login quickly using the demo profiles to explore student, caretaker, or admin flows.</p>
-        </div>
-
-        {/* Logo & Header */}
-        <div className="hidden md:block text-center mb-8 animate-fade-in">
-          <Link href="/" className="inline-flex items-center gap-3 mb-6 hover:opacity-80 transition-opacity">
-            <div className="w-10 h-10 bg-gradient-to-br from-cyan-500 to-purple-600 rounded-lg flex items-center justify-center shadow-lg">
-              <span className="text-white font-bold">HV</span>
-            </div>
-            <span className="font-bold text-gray-900 text-xl">HostelVoice</span>
-          </Link>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome Back</h1>
-          <p className="text-gray-600">Sign in to your hostel account</p>
-        </div>
-
-        {/* Main Card */}
-        <div className="bg-white rounded-t-3xl md:rounded-2xl border border-gray-100 md:border-gray-200/50 shadow-lg md:shadow-xl shadow-gray-200/40 md:shadow-gray-200/20 px-6 py-7 md:p-8 mb-0 md:mb-6 animate-scale-in -mt-8 md:mt-0">
-          {/* Error Message */}
-          {error && (
-            <div className="mb-6 p-4 bg-red-50 border border-red-200/50 rounded-lg flex items-start gap-3 animate-shake">
-              <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
-              <p className="text-red-700 text-sm">{error}</p>
-            </div>
-          )}
-
-          {/* Login Form */}
-          <form onSubmit={handleSubmit} className="space-y-4 mb-6">
-            <div>
-              <label className="block text-sm font-semibold text-gray-900 mb-2">Email Address</label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <Input
-                  type="email"
-                  placeholder="you@example.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="pl-10 border-gray-200/50 focus:border-cyan-500 focus:ring-cyan-500"
-                  required
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-semibold text-gray-900 mb-2">Password</label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <Input
-                  type="password"
-                  placeholder="Enter your password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="pl-10 border-gray-200/50 focus:border-cyan-500 focus:ring-cyan-500"
-                  required
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-semibold text-gray-900 mb-3">Select Your Role</label>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                {DEMO_CREDENTIALS.map((cred) => (
-                  <button
-                    key={cred.role}
-                    type="button"
-                    onClick={() => setSelectedRole(cred.role)}
-                    className={`p-3 rounded-lg border-2 transition-all duration-200 ${
-                      selectedRole === cred.role
-                        ? 'border-cyan-500 bg-cyan-50'
-                        : 'border-gray-200/50 bg-gray-50 hover:border-gray-300'
-                    }`}
-                  >
-                    <div className="text-sm font-semibold text-gray-900">{cred.title}</div>
-                    <div className="text-xs text-gray-600 mt-1">{cred.role === 'student' ? 'Student' : cred.role === 'caretaker' ? 'Caretaker' : 'Admin'}</div>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <Button
-              type="submit"
-              disabled={isLoading}
-              className="w-full mt-6 bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-600 hover:to-cyan-700 text-white border-0 font-semibold py-2 h-auto transition-all duration-200"
-            >
-              {isLoading ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Signing in...
-                </>
-              ) : (
-                'Sign In'
-              )}
-            </Button>
-          </form>
-
-          {/* Demo Data Buttons */}
-          <div className="mt-6 space-y-2">
-            <p className="text-sm font-semibold text-gray-900">Quick demo logins</p>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              {DEMO_CREDENTIALS.map((cred) => (
-                <button
-                  key={cred.role}
-                  type="button"
-                  onClick={() => {
-                    setEmail(cred.email)
-                    setPassword(cred.password)
-                    setSelectedRole(cred.role)
-                  }}
-                  className="w-full px-4 py-3 text-left rounded-lg border border-gray-200/70 bg-gray-50 hover:border-cyan-300 hover:bg-white transition-all duration-200"
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <div className="text-sm font-semibold text-gray-900">{cred.title}</div>
-                      <div className="text-xs text-gray-600 mt-1 leading-relaxed">{cred.email}</div>
-                    </div>
-                    <Check className={`w-4 h-4 ${selectedRole === cred.role ? 'text-cyan-600 opacity-100' : 'text-gray-300 opacity-50'}`} />
-                  </div>
-                  <div className="text-[11px] text-gray-500 mt-2">{cred.description}</div>
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Footer */}
-        <div className="text-center text-sm text-gray-600">
-          <p>
-            Back to <Link href="/" className="text-cyan-600 hover:text-cyan-700 font-semibold transition-colors">home</Link>
-          </p>
-        </div>
-      </div>
-
+    <main className="min-h-screen bg-white relative overflow-hidden">
       <style jsx>{`
         @keyframes fadeIn {
           from {
@@ -239,6 +95,11 @@ export default function LoginPage() {
           75% { transform: translateX(5px); }
         }
 
+        @keyframes float {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-15px); }
+        }
+
         .animate-fade-in {
           animation: fadeIn 0.6s ease-out;
         }
@@ -250,7 +111,230 @@ export default function LoginPage() {
         .animate-shake {
           animation: shake 0.4s ease-out;
         }
+
+        .animate-float {
+          animation: float 4s ease-in-out infinite;
+        }
       `}</style>
+
+      {/* Background */}
+      <div
+        className="absolute inset-0 z-0"
+        style={{
+          backgroundImage: `
+            linear-gradient(to right, rgba(1, 75, 137, 0.08) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(1, 75, 137, 0.08) 1px, transparent 1px),
+            radial-gradient(circle 800px at 50% 0%, rgba(1, 75, 137, 0.05), transparent)
+          `,
+          backgroundSize: "80px 80px, 80px 80px, 100% 100%",
+        }}
+      />
+
+      {/* Floating Orbs */}
+      <div className="absolute top-20 right-10 w-64 h-64 rounded-full opacity-10 blur-3xl animate-float" style={{ background: '#014b89' }}></div>
+      <div className="absolute bottom-20 left-10 w-80 h-80 rounded-full opacity-10 blur-3xl animate-float" style={{ background: '#f26918', animationDelay: '2s' }}></div>
+
+      {/* Navigation */}
+      <nav className="relative z-50 bg-white/80 backdrop-blur-xl border-b border-gray-200 shadow-sm">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+          <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+            <Image 
+              src="/logo/logo.png" 
+              alt="HostelVoice Logo" 
+              width={2000} 
+              height={70} 
+              className="h-14 w-auto"
+              priority
+            />
+          </Link>
+          <Link href="/register">
+            <Button variant="outline" className="border-2 hover:text-white font-semibold transition-all" style={{ borderColor: '#014b89', color: '#014b89' }} onMouseEnter={(e) => e.currentTarget.style.background = '#014b89'} onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}>
+              Register
+            </Button>
+          </Link>
+        </div>
+      </nav>
+
+      {/* Main Content */}
+      <div className="relative z-10 flex items-center justify-center px-4 py-12 md:py-16">
+        <div className="w-full max-w-md">
+          {/* Header */}
+          <div className="text-center mb-8 animate-fade-in">
+            <h1 className="text-4xl md:text-5xl font-bold mb-3" style={{ color: '#014b89' }}>
+              Welcome Back
+            </h1>
+            <p className="text-lg text-gray-600">Sign in to your hostel account</p>
+          </div>
+
+          {/* Main Card */}
+          <div className="bg-white rounded-3xl border-2 shadow-2xl px-6 py-8 md:p-10 mb-6 animate-scale-in" style={{ borderColor: 'rgba(1, 75, 137, 0.1)' }}>
+            {/* Error Message */}
+            {error && (
+              <div className="mb-6 p-4 rounded-xl border-2 flex items-start gap-3 animate-shake" style={{ background: 'rgba(239, 68, 68, 0.05)', borderColor: 'rgba(239, 68, 68, 0.2)' }}>
+                <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+                <p className="text-red-700 text-sm font-medium">{error}</p>
+              </div>
+            )}
+
+            {/* Login Form */}
+            <form onSubmit={handleSubmit} className="space-y-5 mb-8">
+              <div>
+                <label className="block text-sm font-bold text-gray-900 mb-2">Email Address *</label>
+                <div className="relative">
+                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <Input
+                    type="email"
+                    placeholder="you@example.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="pl-12 border-2 border-gray-200 focus:border-[#014b89] focus:ring-[#014b89] rounded-xl h-12 transition-all"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-bold text-gray-900 mb-2">Password *</label>
+                <div className="relative">
+                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <Input
+                    type="password"
+                    placeholder="Enter your password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="pl-12 border-2 border-gray-200 focus:border-[#014b89] focus:ring-[#014b89] rounded-xl h-12 transition-all"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-bold text-gray-900 mb-3">Select Your Role *</label>
+                <div className="grid grid-cols-3 gap-3">
+                  {DEMO_CREDENTIALS.map((cred) => {
+                    const Icon = cred.icon
+                    return (
+                      <button
+                        key={cred.role}
+                        type="button"
+                        onClick={() => setSelectedRole(cred.role)}
+                        className={`p-3 rounded-xl border-2 transition-all duration-200 ${
+                          selectedRole === cred.role
+                            ? 'shadow-lg'
+                            : 'border-gray-200 hover:border-gray-300'
+                        }`}
+                        style={{
+                          borderColor: selectedRole === cred.role ? cred.color : undefined,
+                          background: selectedRole === cred.role ? `${cred.color}08` : undefined
+                        }}
+                      >
+                        <div className="flex flex-col items-center gap-2">
+                          <div 
+                            className="w-10 h-10 rounded-lg flex items-center justify-center"
+                            style={{ background: selectedRole === cred.role ? cred.color : 'rgba(0,0,0,0.05)' }}
+                          >
+                            <Icon className="w-5 h-5" style={{ color: selectedRole === cred.role ? 'white' : '#666' }} />
+                          </div>
+                          <div className="text-xs font-bold text-gray-900 text-center leading-tight">{cred.title}</div>
+                        </div>
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
+
+              <Button
+                type="submit"
+                disabled={isLoading}
+                className="w-full mt-6 text-white font-bold py-4 rounded-xl transition-all duration-200 disabled:opacity-50 text-base shadow-lg hover:shadow-xl"
+                style={{ background: '#014b89' }}
+                onMouseEnter={(e) => !isLoading && (e.currentTarget.style.background = '#012d52')}
+                onMouseLeave={(e) => !isLoading && (e.currentTarget.style.background = '#014b89')}
+              >
+                {isLoading ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    Signing in...
+                  </span>
+                ) : (
+                  <span className="flex items-center justify-center gap-2">
+                    Sign In
+                    <ArrowRight className="w-5 h-5" />
+                  </span>
+                )}
+              </Button>
+            </form>
+
+            {/* Demo Data Buttons */}
+            <div className="mt-8 space-y-3">
+              <div className="flex items-center gap-2 justify-center mb-4">
+                <div className="h-px flex-1 bg-gray-200"></div>
+                <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">Quick Demo Logins</p>
+                <div className="h-px flex-1 bg-gray-200"></div>
+              </div>
+              <div className="space-y-3">
+                {DEMO_CREDENTIALS.map((cred) => {
+                  const Icon = cred.icon
+                  return (
+                    <button
+                      key={cred.role}
+                      type="button"
+                      onClick={() => {
+                        setEmail(cred.email)
+                        setPassword(cred.password)
+                        setSelectedRole(cred.role)
+                      }}
+                      className="w-full px-4 py-3 text-left rounded-xl border-2 border-gray-200 bg-white hover:shadow-lg transition-all duration-200 group"
+                      style={{
+                        borderColor: selectedRole === cred.role && email === cred.email ? cred.color : undefined
+                      }}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div 
+                          className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
+                          style={{ background: `${cred.color}15` }}
+                        >
+                          <Icon className="w-5 h-5" style={{ color: cred.color }} />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="text-sm font-bold text-gray-900">{cred.title}</div>
+                          <div className="text-xs text-gray-600 mt-0.5">{cred.description}</div>
+                        </div>
+                        <Check 
+                          className={`w-5 h-5 flex-shrink-0 transition-all ${
+                            selectedRole === cred.role && email === cred.email 
+                              ? 'opacity-100' 
+                              : 'opacity-0 group-hover:opacity-30'
+                          }`}
+                          style={{ color: cred.color }}
+                        />
+                      </div>
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
+          </div>
+
+          {/* Footer */}
+          <div className="text-center space-y-3">
+            <p className="text-sm text-gray-600">
+              Don't have an account?{' '}
+              <Link href="/register" className="font-semibold hover:underline transition-colors" style={{ color: '#014b89' }}>
+                Register Now
+              </Link>
+            </p>
+            <p className="text-sm text-gray-600">
+              <Link href="/" className="font-semibold hover:underline transition-colors" style={{ color: '#f26918' }}>
+                ← Back to Home
+              </Link>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Bottom Wave */}
+      <div className="absolute bottom-0 left-0 right-0 h-2 z-0" style={{ background: 'linear-gradient(to right, #014b89, #f26918)' }}></div>
     </main>
   )
 }
