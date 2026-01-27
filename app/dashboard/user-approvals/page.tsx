@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useAuth } from '@/lib/auth-context'
-import { createClient } from '@/lib/supabase/client'
+import { adminApi } from '@/lib/api'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -39,7 +39,6 @@ export default function UserApprovalsPage() {
   const { user } = useAuth()
   const router = useRouter()
   const { toast } = useToast()
-  const supabase = createClient()
   
   const [pendingUsers, setPendingUsers] = useState<PendingUser[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -59,14 +58,8 @@ export default function UserApprovalsPage() {
   const fetchPendingUsers = async () => {
     setIsLoading(true)
     try {
-      const { data, error } = await supabase
-        .from('users')
-        .select('*')
-        .eq('approval_status', 'pending')
-        .order('created_at', { ascending: false })
-
-      if (error) throw error
-      setPendingUsers(data || [])
+      const response = await adminApi.getPendingUsers()
+      setPendingUsers(response.data || [])
     } catch (error) {
       console.error('Error fetching pending users:', error)
       toast({
@@ -94,16 +87,7 @@ export default function UserApprovalsPage() {
     })
 
     try {
-      const { error } = await supabase
-        .from('users')
-        .update({
-          approval_status: 'approved',
-          approved_by: user?.id,
-          approval_date: new Date().toISOString(),
-        })
-        .eq('id', userId)
-
-      if (error) throw error
+      await adminApi.approveUser(userId)
 
       toast({
         title: "User Approved! ✅",
@@ -141,17 +125,7 @@ export default function UserApprovalsPage() {
     })
 
     try {
-      const { error } = await supabase
-        .from('users')
-        .update({
-          approval_status: 'rejected',
-          approved_by: user?.id,
-          approval_date: new Date().toISOString(),
-          rejection_reason: rejectionReason || 'Registration declined by administrator',
-        })
-        .eq('id', selectedUser.id)
-
-      if (error) throw error
+      await adminApi.rejectUser(selectedUser.id, rejectionReason || 'Registration declined by administrator')
 
       toast({
         title: "Registration Rejected",
