@@ -1,8 +1,11 @@
 'use client'
 
 import { useAuth } from '@/lib/auth-context'
-import { AlertCircle, TrendingUp, Users, MessageSquare, Zap, BarChart3, ClipboardList, ArrowRight, CheckCircle2 } from 'lucide-react'
+import { AlertCircle, TrendingUp, Users, MessageSquare, Zap, BarChart3, ClipboardList, ArrowRight, CheckCircle2, Loader2 } from 'lucide-react'
 import Link from 'next/link'
+import { useState, useEffect, useCallback } from 'react'
+import { analyticsApi, issuesApi, announcementsApi, lostFoundApi, residentsApi, DashboardStats } from '@/lib/api'
+import { toast } from 'sonner'
 
 export default function DashboardPage() {
   const { user } = useAuth()
@@ -26,11 +29,41 @@ export default function DashboardPage() {
 }
 
 function StudentDashboard({ user }: { user: any }) {
-  const stats = [
-    { label: 'Open Issues', value: '2', icon: AlertCircle, color: '#014b89', bgColor: 'rgba(1, 75, 137, 0.1)' },
-    { label: 'Announcements', value: '12', icon: MessageSquare, color: '#f26918', bgColor: 'rgba(242, 105, 24, 0.1)' },
-    { label: 'Hostel Items', value: '5', icon: CheckCircle2, color: '#014b89', bgColor: 'rgba(1, 75, 137, 0.1)' }
-  ]
+  const [loading, setLoading] = useState(true)
+  const [stats, setStats] = useState([
+    { label: 'Open Issues', value: '0', icon: AlertCircle, color: '#014b89', bgColor: 'rgba(1, 75, 137, 0.1)' },
+    { label: 'Announcements', value: '0', icon: MessageSquare, color: '#f26918', bgColor: 'rgba(242, 105, 24, 0.1)' },
+    { label: 'Lost & Found', value: '0', icon: CheckCircle2, color: '#014b89', bgColor: 'rgba(1, 75, 137, 0.1)' }
+  ])
+
+  const fetchStats = useCallback(async () => {
+    try {
+      setLoading(true)
+      const [issuesRes, announcementsRes, lostFoundRes] = await Promise.all([
+        issuesApi.getMyIssues(1, 100),
+        announcementsApi.getTargeted(1, 100),
+        lostFoundApi.getOpenItems({ page: 1, limit: 100 })
+      ])
+
+      const openIssues = (issuesRes.data || []).filter(i => i.status !== 'resolved' && i.status !== 'closed').length
+      const announcementCount = (announcementsRes.data || []).length
+      const lostFoundCount = (lostFoundRes.data || []).length
+
+      setStats([
+        { label: 'Open Issues', value: String(openIssues), icon: AlertCircle, color: '#014b89', bgColor: 'rgba(1, 75, 137, 0.1)' },
+        { label: 'Announcements', value: String(announcementCount), icon: MessageSquare, color: '#f26918', bgColor: 'rgba(242, 105, 24, 0.1)' },
+        { label: 'Lost & Found', value: String(lostFoundCount), icon: CheckCircle2, color: '#014b89', bgColor: 'rgba(1, 75, 137, 0.1)' }
+      ])
+    } catch (error) {
+      console.error('Error fetching student stats:', error)
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    fetchStats()
+  }, [fetchStats])
 
   const quickActions = [
     { title: 'Report Issue', description: 'Tell us about any problems', icon: AlertCircle, href: '/dashboard/issues', color: '#014b89' },
@@ -109,7 +142,13 @@ function StudentDashboard({ user }: { user: any }) {
                   </div>
                 </div>
                 <p className="text-sm font-semibold text-gray-600 mb-2 uppercase tracking-wide">{stat.label}</p>
-                <p className="text-4xl md:text-5xl font-bold" style={{ color: '#014b89' }}>{stat.value}</p>
+                {loading ? (
+                  <div className="flex items-center gap-2">
+                    <Loader2 className="w-6 h-6 animate-spin" style={{ color: '#014b89' }} />
+                  </div>
+                ) : (
+                  <p className="text-4xl md:text-5xl font-bold" style={{ color: '#014b89' }}>{stat.value}</p>
+                )}
               </div>
             )
           })}
@@ -158,11 +197,46 @@ function StudentDashboard({ user }: { user: any }) {
 }
 
 function CaretakerDashboard({ user }: { user: any }) {
-  const stats = [
-    { label: 'Active Issues', value: '8', icon: AlertCircle, color: '#f26918', bgColor: 'rgba(242, 105, 24, 0.1)' },
-    { label: 'Residents', value: '45', icon: Users, color: '#014b89', bgColor: 'rgba(1, 75, 137, 0.1)' },
-    { label: 'Resolved Today', value: '3', icon: TrendingUp, color: '#f26918', bgColor: 'rgba(242, 105, 24, 0.1)' }
-  ]
+  const [loading, setLoading] = useState(true)
+  const [stats, setStats] = useState([
+    { label: 'Active Issues', value: '0', icon: AlertCircle, color: '#f26918', bgColor: 'rgba(242, 105, 24, 0.1)' },
+    { label: 'Residents', value: '0', icon: Users, color: '#014b89', bgColor: 'rgba(1, 75, 137, 0.1)' },
+    { label: 'Resolved Today', value: '0', icon: TrendingUp, color: '#f26918', bgColor: 'rgba(242, 105, 24, 0.1)' }
+  ])
+
+  const fetchStats = useCallback(async () => {
+    try {
+      setLoading(true)
+      const [issuesRes, residentsRes] = await Promise.all([
+        issuesApi.getAllIssues({ limit: 500 }),
+        residentsApi.getAll(1, 1000)
+      ])
+      
+      const issues = issuesRes.data || []
+      const residents = residentsRes.data || []
+      
+      const today = new Date().toISOString().split('T')[0]
+      const activeIssues = issues.filter(i => i.status !== 'resolved' && i.status !== 'closed').length
+      const resolvedToday = issues.filter(i => 
+        i.status === 'resolved' && i.resolved_at?.startsWith(today)
+      ).length
+
+      setStats([
+        { label: 'Active Issues', value: String(activeIssues), icon: AlertCircle, color: '#f26918', bgColor: 'rgba(242, 105, 24, 0.1)' },
+        { label: 'Residents', value: String(residents.length), icon: Users, color: '#014b89', bgColor: 'rgba(1, 75, 137, 0.1)' },
+        { label: 'Resolved Today', value: String(resolvedToday), icon: TrendingUp, color: '#f26918', bgColor: 'rgba(242, 105, 24, 0.1)' }
+      ])
+    } catch (error) {
+      console.error('Error fetching caretaker stats:', error)
+      toast.error('Failed to load dashboard statistics')
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    fetchStats()
+  }, [fetchStats])
 
   const managementLinks = [
     { title: 'Manage Issues', description: 'View and resolve issues', icon: ClipboardList, href: '/dashboard/issues/caretaker', color: '#f26918' },
@@ -241,7 +315,13 @@ function CaretakerDashboard({ user }: { user: any }) {
                   </div>
                 </div>
                 <p className="text-sm font-semibold text-gray-600 mb-2 uppercase tracking-wide">{stat.label}</p>
-                <p className="text-4xl md:text-5xl font-bold" style={{ color: stat.color }}>{stat.value}</p>
+                {loading ? (
+                  <div className="flex items-center gap-2">
+                    <Loader2 className="w-6 h-6 animate-spin" style={{ color: stat.color }} />
+                  </div>
+                ) : (
+                  <p className="text-4xl md:text-5xl font-bold" style={{ color: stat.color }}>{stat.value}</p>
+                )}
               </div>
             )
           })}
@@ -290,16 +370,45 @@ function CaretakerDashboard({ user }: { user: any }) {
 }
 
 function AdminDashboard({ user }: { user: any }) {
+  const [loading, setLoading] = useState(true)
+  const [dashboardData, setDashboardData] = useState<DashboardStats | null>(null)
+
+  const fetchStats = useCallback(async () => {
+    try {
+      setLoading(true)
+      const res = await analyticsApi.getDashboard()
+      if (res.data) {
+        setDashboardData(res.data)
+      }
+    } catch (error) {
+      console.error('Error fetching admin stats:', error)
+      toast.error('Failed to load dashboard statistics')
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    fetchStats()
+  }, [fetchStats])
+
+  // Calculate stats from the new backend structure
+  const totalIssues = dashboardData?.issues?.total || dashboardData?.totalIssues || 0
+  const totalUsers = dashboardData?.users?.total || dashboardData?.totalUsers || 0
+  const pendingIssues = dashboardData?.issues?.pending || dashboardData?.pendingIssues || 0
+  const resolvedIssues = totalIssues - pendingIssues
+  const resolutionRate = totalIssues > 0 ? Math.round((resolvedIssues / totalIssues) * 100) : 0
+
   const stats = [
-    { label: 'Total Issues', value: '124', icon: AlertCircle, color: '#014b89', bgColor: 'rgba(1, 75, 137, 0.1)' },
-    { label: 'Total Users', value: '2,450', icon: Users, color: '#f26918', bgColor: 'rgba(242, 105, 24, 0.1)' },
-    { label: 'Resolution Rate', value: '94%', icon: TrendingUp, color: '#014b89', bgColor: 'rgba(1, 75, 137, 0.1)' }
+    { label: 'Total Issues', value: totalIssues.toLocaleString(), icon: AlertCircle, color: '#014b89', bgColor: 'rgba(1, 75, 137, 0.1)' },
+    { label: 'Total Users', value: totalUsers.toLocaleString(), icon: Users, color: '#f26918', bgColor: 'rgba(242, 105, 24, 0.1)' },
+    { label: 'Resolution Rate', value: `${resolutionRate}%`, icon: TrendingUp, color: '#014b89', bgColor: 'rgba(1, 75, 137, 0.1)' }
   ]
 
   const adminTools = [
     { title: 'Analytics', description: 'System-wide metrics', icon: BarChart3, href: '/dashboard/analytics', color: '#014b89' },
     { title: 'Management', description: 'User & system control', icon: ClipboardList, href: '/dashboard/management', color: '#f26918' },
-    { title: 'Announcements', description: 'Broadcast messages', icon: MessageSquare, href: '/dashboard/announcements', color: '#014b89' }
+    { title: 'Announcements', description: 'Broadcast messages', icon: MessageSquare, href: '/dashboard/announcements-manage', color: '#014b89' }
   ]
 
   return (
@@ -373,7 +482,13 @@ function AdminDashboard({ user }: { user: any }) {
                   </div>
                 </div>
                 <p className="text-sm font-semibold text-gray-600 mb-2 uppercase tracking-wide">{stat.label}</p>
-                <p className="text-4xl md:text-5xl font-bold" style={{ color: stat.color }}>{stat.value}</p>
+                {loading ? (
+                  <div className="flex items-center gap-2">
+                    <Loader2 className="w-6 h-6 animate-spin" style={{ color: stat.color }} />
+                  </div>
+                ) : (
+                  <p className="text-4xl md:text-5xl font-bold" style={{ color: stat.color }}>{stat.value}</p>
+                )}
               </div>
             )
           })}

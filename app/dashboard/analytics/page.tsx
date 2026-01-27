@@ -1,73 +1,88 @@
 'use client'
 
-import React from "react"
-
+import React, { useState, useEffect, useCallback } from 'react'
 import { useAuth } from '@/lib/auth-context'
-import { TrendingUp, TrendingDown, Users, AlertCircle, CheckCircle, Clock } from 'lucide-react'
-
-interface Metric {
-  label: string
-  value: string | number
-  change: number
-  trend: 'up' | 'down'
-  icon: React.ComponentType<{ className: string; style?: React.CSSProperties }>
-}
+import { analyticsApi, ApiError, DashboardStats } from '@/lib/api'
+import { TrendingUp, TrendingDown, Users, AlertCircle, CheckCircle, Clock, Loader2, RefreshCw, Bell, Search } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { toast } from 'sonner'
 
 export default function AnalyticsPage() {
   const { user } = useAuth()
+  const [dashboardData, setDashboardData] = useState<DashboardStats | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-  const metrics: Metric[] = [
+  const fetchAnalytics = useCallback(async () => {
+    if (!user) return
+    setIsLoading(true)
+    setError(null)
+
+    try {
+      const response = await analyticsApi.getDashboard()
+      if (response.data) {
+        setDashboardData(response.data)
+      }
+    } catch (err) {
+      const message = err instanceof ApiError ? err.message : 'Failed to load analytics'
+      setError(message)
+      toast.error(message)
+    } finally {
+      setIsLoading(false)
+    }
+  }, [user])
+
+  useEffect(() => {
+    fetchAnalytics()
+  }, [fetchAnalytics])
+
+  // Extract values from backend response structure
+  const totalIssues = dashboardData?.issues?.total || 0
+  const pendingIssues = dashboardData?.issues?.pending || 0
+  const resolvedIssues = totalIssues - pendingIssues
+  const issuesTrend = dashboardData?.issues?.trend || 0
+  const totalUsers = dashboardData?.users?.total || 0
+  const pendingApprovals = dashboardData?.users?.pending_approvals || 0
+  const activeAnnouncements = dashboardData?.announcements?.active || 0
+  const openLostFound = dashboardData?.lost_found?.open || 0
+  const resolutionRate = totalIssues > 0 ? Math.round((resolvedIssues / totalIssues) * 100) : 0
+
+  const metrics = [
     {
       label: 'Total Issues',
-      value: '127',
-      change: 12,
-      trend: 'up',
+      value: totalIssues,
+      change: issuesTrend,
+      trend: issuesTrend >= 0 ? 'up' as const : 'down' as const,
       icon: AlertCircle
     },
     {
       label: 'Resolved Issues',
-      value: '94',
-      change: 8,
-      trend: 'up',
+      value: resolvedIssues,
+      change: resolutionRate,
+      trend: 'up' as const,
       icon: CheckCircle
     },
     {
-      label: 'Avg Resolution Time',
-      value: '4.2h',
-      change: -15,
-      trend: 'down',
-      icon: Clock
+      label: 'Active Users',
+      value: totalUsers,
+      change: 0,
+      trend: 'up' as const,
+      icon: Users
     },
     {
-      label: 'Active Residents',
-      value: '1,840',
-      change: 23,
-      trend: 'up',
-      icon: Users
+      label: 'Announcements',
+      value: activeAnnouncements,
+      change: 0,
+      trend: 'up' as const,
+      icon: Bell
     }
   ]
 
-  const issuesByCategory = [
-    { category: 'Maintenance', count: 42, percentage: 33, color: '#f26918' },
-    { category: 'Electrical', count: 28, percentage: 22, color: '#014b89' },
-    { category: 'Plumbing', count: 25, percentage: 20, color: '#a855f7' },
-    { category: 'Cleanliness', count: 20, percentage: 16, color: '#06b6d4' },
-    { category: 'Other', count: 12, percentage: 9, color: '#6b7280' }
-  ]
-
-  const issuesByStatus = [
-    { status: 'Resolved', count: 94, color: { bg: 'rgba(16, 185, 129, 0.1)', text: '#10b981', border: 'rgba(16, 185, 129, 0.3)' } },
-    { status: 'In Progress', count: 24, color: { bg: 'rgba(242, 105, 24, 0.1)', text: '#f26918', border: 'rgba(242, 105, 24, 0.3)' } },
-    { status: 'Open', count: 9, color: { bg: 'rgba(1, 75, 137, 0.1)', text: '#014b89', border: 'rgba(1, 75, 137, 0.3)' } }
-  ]
-
-  const hostels = [
-    { name: 'North Wing', residents: 180, issues: 15, resolved: 93 },
-    { name: 'South Wing', residents: 165, issues: 12, resolved: 89 },
-    { name: 'East Wing', residents: 190, issues: 18, resolved: 91 },
-    { name: 'West Wing', residents: 175, issues: 14, resolved: 88 },
-    { name: 'Central Block', residents: 200, issues: 20, resolved: 95 },
-    { name: 'New Hostel', residents: 130, issues: 8, resolved: 87 }
+  const summaryStats = [
+    { label: 'Pending Issues', value: pendingIssues, color: '#f26918' },
+    { label: 'Pending Approvals', value: pendingApprovals, color: '#a855f7' },
+    { label: 'Open Lost & Found', value: openLostFound, color: '#06b6d4' },
+    { label: 'Resolution Rate', value: `${resolutionRate}%`, color: '#10b981' }
   ]
 
   if (!user) return null
@@ -104,13 +119,48 @@ export default function AnalyticsPage() {
 
       <div className="max-w-7xl mx-auto px-4 pt-6 pb-24 md:px-8 md:pt-12 md:pb-12 relative z-10">
         {/* Header */}
-        <div className="mb-8 md:mb-12 animate-fade-in">
-          <h1 className="text-3xl md:text-5xl font-bold mb-2" style={{ color: '#014b89' }}>
-            Analytics & Reports
-          </h1>
-          <p className="text-base md:text-lg text-gray-600">System-wide analytics and performance metrics</p>
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8 md:mb-12 animate-fade-in">
+          <div>
+            <h1 className="text-3xl md:text-5xl font-bold mb-2" style={{ color: '#014b89' }}>
+              Analytics & Reports
+            </h1>
+            <p className="text-base md:text-lg text-gray-600">System-wide analytics and performance metrics</p>
+          </div>
+          <Button
+            onClick={fetchAnalytics}
+            variant="outline"
+            className="gap-2 h-12 rounded-xl font-semibold border-2"
+            style={{ borderColor: '#014b89', color: '#014b89' }}
+            disabled={isLoading}
+          >
+            <RefreshCw className={`w-5 h-5 ${isLoading ? 'animate-spin' : ''}`} />
+            Refresh
+          </Button>
         </div>
 
+        {/* Loading State */}
+        {isLoading && (
+          <div className="flex flex-col items-center justify-center py-20">
+            <Loader2 className="w-12 h-12 animate-spin mb-4" style={{ color: '#014b89' }} />
+            <p className="text-gray-600 font-medium">Loading analytics...</p>
+          </div>
+        )}
+
+        {/* Error State */}
+        {error && !isLoading && (
+          <div className="bg-red-50 border-2 border-red-200 rounded-2xl p-8 text-center mb-8">
+            <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
+            <h3 className="text-xl font-bold text-red-700 mb-2">Failed to Load Analytics</h3>
+            <p className="text-red-600 mb-4">{error}</p>
+            <Button onClick={fetchAnalytics} className="bg-red-600 hover:bg-red-700 text-white">
+              Try Again
+            </Button>
+          </div>
+        )}
+
+        {/* Analytics Content */}
+        {!isLoading && !error && dashboardData && (
+        <>
         {/* Key Metrics */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8 md:mb-12">
           {metrics.map((metric, i) => {
@@ -148,59 +198,32 @@ export default function AnalyticsPage() {
 
         {/* Charts Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 mb-8 md:mb-12">
-          {/* Issues by Category */}
+          {/* Issues Overview */}
           <div className="bg-white border-2 border-gray-100 rounded-2xl p-6 md:p-8 shadow-lg">
             <h2 className="text-2xl md:text-3xl font-bold mb-6 md:mb-8" style={{ color: '#014b89' }}>
-              Issues by Category
-            </h2>
-            <div className="space-y-6">
-              {issuesByCategory.map((item) => (
-                <div key={item.category}>
-                  <div className="flex items-center justify-between mb-3">
-                    <p className="text-base font-bold text-gray-900">{item.category}</p>
-                    <span className="text-sm font-bold px-3 py-1 rounded-lg" style={{ background: `${item.color}15`, color: item.color }}>
-                      {item.count}
-                    </span>
-                  </div>
-                  <div className="h-3 rounded-full bg-gray-100 overflow-hidden">
-                    <div
-                      className="h-full rounded-full transition-all duration-500"
-                      style={{ 
-                        width: `${item.percentage}%`,
-                        background: item.color
-                      }}
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Issues by Status */}
-          <div className="bg-white border-2 border-gray-100 rounded-2xl p-6 md:p-8 shadow-lg">
-            <h2 className="text-2xl md:text-3xl font-bold mb-6 md:mb-8" style={{ color: '#014b89' }}>
-              Issues by Status
+              Issues Overview
             </h2>
             <div className="space-y-4">
-              {issuesByStatus.map((item) => (
+              {[
+                { label: 'Resolved', count: resolvedIssues, color: '#10b981' },
+                { label: 'Pending', count: pendingIssues, color: '#f26918' },
+                { label: 'This Month', count: dashboardData.issues?.this_month || 0, color: '#014b89' },
+                { label: 'Last Month', count: dashboardData.issues?.last_month || 0, color: '#6b7280' }
+              ].map((item) => (
                 <div
-                  key={item.status}
-                  className="flex items-center justify-between p-5 rounded-xl border-2 transition-all hover:shadow-md"
-                  style={{ 
-                    background: item.color.bg,
-                    borderColor: item.color.border
-                  }}
+                  key={item.label}
+                  className="flex items-center justify-between p-5 rounded-xl border-2 border-gray-100 hover:shadow-md transition-all"
                 >
                   <div className="flex items-center gap-3">
                     <div 
                       className="w-4 h-4 rounded-full"
-                      style={{ background: item.color.text }}
+                      style={{ background: item.color }}
                     />
-                    <span className="font-bold text-gray-900">{item.status}</span>
+                    <span className="font-bold text-gray-900">{item.label}</span>
                   </div>
                   <span 
                     className="px-4 py-2 rounded-xl text-base font-bold"
-                    style={{ color: item.color.text }}
+                    style={{ color: item.color }}
                   >
                     {item.count}
                   </span>
@@ -208,90 +231,56 @@ export default function AnalyticsPage() {
               ))}
             </div>
           </div>
-        </div>
 
-        {/* Hostel Performance */}
-        <div className="bg-white border-2 border-gray-100 rounded-2xl p-6 md:p-8 shadow-lg mb-8">
-          <h2 className="text-2xl md:text-3xl font-bold mb-6 md:mb-8" style={{ color: '#014b89' }}>
-            Hostel Performance
-          </h2>
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b-2 border-gray-200">
-                  <th className="px-4 py-4 text-left font-bold text-gray-600 uppercase tracking-wide text-sm">Hostel</th>
-                  <th className="px-4 py-4 text-left font-bold text-gray-600 uppercase tracking-wide text-sm">Residents</th>
-                  <th className="px-4 py-4 text-left font-bold text-gray-600 uppercase tracking-wide text-sm">Issues</th>
-                  <th className="px-4 py-4 text-left font-bold text-gray-600 uppercase tracking-wide text-sm">Resolved</th>
-                  <th className="px-4 py-4 text-left font-bold text-gray-600 uppercase tracking-wide text-sm">Resolution %</th>
-                </tr>
-              </thead>
-              <tbody>
-                {hostels.map((hostel, i) => {
-                  const resolutionRate = Math.round((hostel.resolved / (hostel.resolved + hostel.issues)) * 100)
-                  return (
-                    <tr 
-                      key={hostel.name} 
-                      className="border-b border-gray-100 hover:bg-gray-50 transition-colors"
-                      style={{ animationDelay: `${i * 0.05}s` }}
-                    >
-                      <td className="px-4 py-4 font-bold text-gray-900">{hostel.name}</td>
-                      <td className="px-4 py-4 font-semibold text-gray-700">{hostel.residents}</td>
-                      <td className="px-4 py-4">
-                        <span className="px-3 py-1.5 rounded-lg text-sm font-bold border-2" style={{ background: 'rgba(1, 75, 137, 0.1)', color: '#014b89', borderColor: 'rgba(1, 75, 137, 0.3)' }}>
-                          {hostel.issues}
-                        </span>
-                      </td>
-                      <td className="px-4 py-4">
-                        <span className="px-3 py-1.5 rounded-lg text-sm font-bold border-2" style={{ background: 'rgba(16, 185, 129, 0.1)', color: '#10b981', borderColor: 'rgba(16, 185, 129, 0.3)' }}>
-                          {hostel.resolved}
-                        </span>
-                      </td>
-                      <td className="px-4 py-4">
-                        <div className="flex items-center gap-3">
-                          <div className="w-32 h-3 rounded-full bg-gray-100 overflow-hidden">
-                            <div
-                              className="h-full rounded-full transition-all duration-500"
-                              style={{ 
-                                width: `${resolutionRate}%`,
-                                background: 'linear-gradient(to right, #10b981, #059669)'
-                              }}
-                            />
-                          </div>
-                          <span className="font-bold text-base" style={{ color: '#10b981' }}>{resolutionRate}%</span>
-                        </div>
-                      </td>
-                    </tr>
-                  )
-                })}
-              </tbody>
-            </table>
+          {/* Quick Stats */}
+          <div className="bg-white border-2 border-gray-100 rounded-2xl p-6 md:p-8 shadow-lg">
+            <h2 className="text-2xl md:text-3xl font-bold mb-6 md:mb-8" style={{ color: '#014b89' }}>
+              Quick Stats
+            </h2>
+            <div className="space-y-4">
+              {summaryStats.map((item) => (
+                <div
+                  key={item.label}
+                  className="flex items-center justify-between p-5 rounded-xl border-2 border-gray-100 hover:shadow-md transition-all"
+                >
+                  <span className="font-bold text-gray-900">{item.label}</span>
+                  <span 
+                    className="px-4 py-2 rounded-xl text-base font-bold"
+                    style={{ color: item.color }}
+                  >
+                    {item.value}
+                  </span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 
         {/* Summary Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
           <div className="bg-white border-2 border-gray-100 rounded-2xl p-5 md:p-6 hover:shadow-xl transition-all">
-            <p className="text-sm font-semibold text-gray-600 mb-2 uppercase tracking-wide">Avg Response Time</p>
-            <p className="text-3xl md:text-4xl font-bold mb-2" style={{ color: '#014b89' }}>4.2h</p>
-            <p className="text-xs font-bold" style={{ color: '#10b981' }}>↓ 15% vs last month</p>
+            <p className="text-sm font-semibold text-gray-600 mb-2 uppercase tracking-wide">Total Users</p>
+            <p className="text-3xl md:text-4xl font-bold mb-2" style={{ color: '#014b89' }}>{totalUsers}</p>
+            <p className="text-xs font-bold" style={{ color: '#10b981' }}>Approved</p>
           </div>
           <div className="bg-white border-2 border-gray-100 rounded-2xl p-5 md:p-6 hover:shadow-xl transition-all">
-            <p className="text-sm font-semibold text-gray-600 mb-2 uppercase tracking-wide">System Uptime</p>
-            <p className="text-3xl md:text-4xl font-bold mb-2" style={{ color: '#014b89' }}>99.9%</p>
-            <p className="text-xs font-bold" style={{ color: '#10b981' }}>Excellent</p>
+            <p className="text-sm font-semibold text-gray-600 mb-2 uppercase tracking-wide">Pending Approvals</p>
+            <p className="text-3xl md:text-4xl font-bold mb-2" style={{ color: '#f26918' }}>{pendingApprovals}</p>
+            <p className="text-xs font-bold" style={{ color: '#f26918' }}>Waiting</p>
           </div>
           <div className="bg-white border-2 border-gray-100 rounded-2xl p-5 md:p-6 hover:shadow-xl transition-all">
-            <p className="text-sm font-semibold text-gray-600 mb-2 uppercase tracking-wide">Total Hostels</p>
-            <p className="text-3xl md:text-4xl font-bold mb-2" style={{ color: '#014b89' }}>12</p>
-            <p className="text-xs font-bold" style={{ color: '#f26918' }}>Active</p>
+            <p className="text-sm font-semibold text-gray-600 mb-2 uppercase tracking-wide">Active Announcements</p>
+            <p className="text-3xl md:text-4xl font-bold mb-2" style={{ color: '#014b89' }}>{activeAnnouncements}</p>
+            <p className="text-xs font-bold" style={{ color: '#10b981' }}>Live</p>
           </div>
           <div className="bg-white border-2 border-gray-100 rounded-2xl p-5 md:p-6 hover:shadow-xl transition-all">
-            <p className="text-sm font-semibold text-gray-600 mb-2 uppercase tracking-wide">Caretakers</p>
-            <p className="text-3xl md:text-4xl font-bold mb-2" style={{ color: '#014b89' }}>24</p>
-            <p className="text-xs font-bold" style={{ color: '#f26918' }}>On staff</p>
+            <p className="text-sm font-semibold text-gray-600 mb-2 uppercase tracking-wide">Lost & Found</p>
+            <p className="text-3xl md:text-4xl font-bold mb-2" style={{ color: '#014b89' }}>{openLostFound}</p>
+            <p className="text-xs font-bold" style={{ color: '#f26918' }}>Open</p>
           </div>
         </div>
+        </>
+        )}
       </div>
     </div>
   )
