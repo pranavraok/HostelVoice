@@ -229,13 +229,20 @@ User Registration:
 ┌─────────────────┐
 │ Insert Profile  │
 │ in users table  │
+│ + approval_     │
+│   status        │
 └────────┬────────┘
          │
-         ▼
-┌─────────────────┐
-│ Auto Login &    │
-│ Redirect        │
-└─────────────────┘
+    ┌────┴────┐
+    │         │
+Admin ▼   Student/Caretaker ▼
+┌─────────┐ ┌─────────────────┐
+│approved │ │ pending         │
+│Auto     │ │ Sign Out User   │
+│Login &  │ │ Show "Pending   │
+│Redirect │ │ Approval" Msg   │
+└─────────┘ │ Redirect Login  │
+            └─────────────────┘
 
 User Login:
 ┌─────────────────┐
@@ -258,21 +265,25 @@ User Login:
          │
          ▼
 ┌─────────────────┐
+│ Load Profile &  │
 │ Verify Role     │
-│ Matches         │
 └────────┬────────┘
          │
          ▼
 ┌─────────────────┐
-│ Load Profile    │
-│ from users      │
+│ Check approval  │
+│ _status         │
 └────────┬────────┘
          │
-         ▼
-┌─────────────────┐
-│ Update Context  │
-│ & Redirect      │
-└─────────────────┘
+    ┌────┴────┬────────┐
+    │         │        │
+pending▼   rejected▼  approved▼
+┌─────────┐ ┌──────┐ ┌─────────┐
+│Show Err │ │Show  │ │Set User │
+│Sign Out │ │Error │ │Redirect │
+└─────────┘ │+Reason│ │Dashboard│
+            │SignOut│ └─────────┘
+            └───────┘
 
 Route Protection:
 ┌─────────────────┐

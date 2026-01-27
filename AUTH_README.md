@@ -84,15 +84,20 @@ Navigate to http://localhost:3000/register and create a test user!
 ```
 User fills form → register() in auth-context.tsx → 
 Supabase Auth creates user → User profile inserted in users table →
-Auto-login → Redirect to dashboard
+↓
+If Admin: approval_status = 'approved' → Auto-login → Redirect to dashboard
+If Student/Caretaker: approval_status = 'pending' → Sign out → Show pending message → Redirect to login
 ```
 
 ### Login Flow
 ```
 User enters credentials + role → login() in auth-context.tsx →
 Supabase Auth validates → Check user's role matches →
-Load user profile from users table → Update React context →
-Redirect to dashboard
+↓
+Check approval_status:
+  - pending: Show "pending approval" error → Sign out
+  - rejected: Show "account declined" with reason → Sign out
+  - approved: Load profile → Update context → Redirect to dashboard
 ```
 
 ### Session Management
@@ -108,6 +113,36 @@ The middleware.ts file protects all routes except:
 - `/login`
 - `/register` (and subroutes)
 - Static files
+
+---
+
+## ✅ User Approval System
+
+### How It Works
+
+**Admin Registration:**
+- Automatically approved upon registration
+- Can login immediately after account creation
+- approval_status set to 'approved' by database trigger
+
+**Student/Caretaker Registration:**
+- approval_status set to 'pending' upon registration
+- User is logged out automatically after registration
+- Must wait for admin approval before logging in
+- Receives "pending approval" message when trying to login
+
+**Approval Process:**
+1. Admin logs into dashboard
+2. Navigates to User Approvals section
+3. Reviews pending users (name, email, role, details)
+4. Can approve or reject with optional reason
+5. Approved users can then login successfully
+
+**Database Fields:**
+- `approval_status`: 'pending' | 'approved' | 'rejected'
+- `approved_by`: UUID of admin who approved
+- `approval_date`: Timestamp of approval
+- `rejection_reason`: Optional reason for rejection
 
 ---
 

@@ -98,10 +98,17 @@ pnpm dev
 ```
 
 2. Navigate to http://localhost:3000/register
-3. Try registering a new user (student, caretaker, or admin)
-4. Check your Supabase dashboard:
-   - **Authentication** > **Users** - should show the new user
-   - **Table Editor** > **users** - should show the user profile
+3. **Important:** Register an ADMIN account first
+   - Choose "Administrator" role
+   - Fill in all details
+   - Admin accounts are auto-approved and can login immediately
+4. Then register a student or caretaker to test approval flow:
+   - Choose "Student" or "Caretaker" role
+   - After registration, you'll see "Pending Approval" message
+   - These accounts need admin approval before login
+5. Check your Supabase dashboard:
+   - **Authentication** > **Users** - should show the new users
+   - **Table Editor** > **users** - check approval_status column
 
 ## Step 8: Create Demo Users (Optional)
 
@@ -109,10 +116,13 @@ To create demo users with the credentials from your login page:
 
 ### Method 1: Through the App (Recommended)
 1. Go to http://localhost:3000/register
-2. Register users with these credentials:
+2. **IMPORTANT:** Register admin first:
+   - **Admin**: admin@hostelvoice.com / password123
+   - Admin is auto-approved and can login immediately
+3. Login as admin and then register other users:
    - **Student**: student@hostelvoice.com / password123
    - **Caretaker**: caretaker@hostelvoice.com / password123
-   - **Admin**: admin@hostelvoice.com / password123
+4. Use admin dashboard to approve student and caretaker accounts
 
 ### Method 2: Using Supabase Dashboard
 1. Go to **Authentication** > **Users**

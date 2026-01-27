@@ -14,6 +14,7 @@ A comprehensive hostel management solution built with **Next.js 16**, **Supabase
 ### 🔐 Authentication & Authorization
 - **Role-based access control** (Student, Caretaker, Admin)
 - Secure authentication with Supabase Auth
+- **User approval system** - Admins approve student/caretaker registrations
 - Protected routes with automatic redirects
 - Session management with automatic refresh
 
@@ -94,7 +95,8 @@ pnpm dev
 
 7. **Open your browser**
    - Navigate to [http://localhost:3000](http://localhost:3000)
-   - Register a new user to get started!
+   - **Register an admin account first** (auto-approved)
+   - Then register student/caretaker accounts (need admin approval)
 
 **📖 For detailed setup instructions, see [`SUPABASE_SETUP.md`](./SUPABASE_SETUP.md)**
 
@@ -214,11 +216,14 @@ All tables include:
 pnpm dev
 
 # Register test users at http://localhost:3000/register
-# Or use demo credentials (after setup):
+# IMPORTANT: Register admin first, then approve other accounts
 
+# Admin (auto-approved):
+Admin: admin@hostelvoice.com / password123
+
+# Student/Caretaker (need admin approval):
 Student: student@hostelvoice.com / password123
 Caretaker: caretaker@hostelvoice.com / password123
-Admin: admin@hostelvoice.com / password123
 ```
 
 ### Verify Setup
