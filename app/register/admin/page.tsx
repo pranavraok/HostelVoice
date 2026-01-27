@@ -26,7 +26,6 @@ export default function AdminRegisterPage() {
     email: '',
     adminId: '',
     phoneNumber: '',
-    university: '',
     position: 'Hostel Administrator',
     department: 'Administration',
     password: '',
@@ -64,10 +63,6 @@ export default function AdminRegisterPage() {
     }
     if (!formData.phoneNumber.trim()) {
       setError('Phone number is required')
-      return false
-    }
-    if (!formData.university.trim()) {
-      setError('University name is required')
       return false
     }
     if (formData.password.length < 6) {
@@ -112,7 +107,6 @@ export default function AdminRegisterPage() {
         role: 'admin',
         phoneNumber: formData.phoneNumber,
         adminId: formData.adminId,
-        university: formData.university,
         position: formData.position,
         department: formData.department,
       })
@@ -344,19 +338,6 @@ export default function AdminRegisterPage() {
                     name="phoneNumber"
                     placeholder="+91 9876543210"
                     value={formData.phoneNumber}
-                    onChange={handleChange}
-                    className="w-full border-2 border-gray-200 focus:border-[#014b89] focus:ring-[#014b89] rounded-xl h-12 transition-all"
-                  />
-                </div>
-
-                {/* University */}
-                <div>
-                  <label className="block text-sm font-bold text-gray-900 mb-2">University Name *</label>
-                  <Input
-                    type="text"
-                    name="university"
-                    placeholder="Delhi Institute of Technology"
-                    value={formData.university}
                     onChange={handleChange}
                     className="w-full border-2 border-gray-200 focus:border-[#014b89] focus:ring-[#014b89] rounded-xl h-12 transition-all"
                   />
