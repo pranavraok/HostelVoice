@@ -7,21 +7,13 @@ import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { AlertCircle, Check, Eye, EyeOff, ArrowLeft, Shield, Sparkles } from 'lucide-react'
-
-const DEMO_DATA = {
-  fullName: 'Dr. Priya Singh',
-  email: 'priya@university.edu',
-  adminId: 'ADM2025001',
-  phoneNumber: '+91 9876543212',
-  university: 'Delhi Institute of Technology',
-  position: 'Hostel Administrator',
-  department: 'Student Affairs',
-  password: 'password123',
-  confirmPassword: 'password123'
-}
+import { useAuth } from '@/lib/auth-context'
+import { useToast } from '@/hooks/use-toast'
 
 export default function AdminRegisterPage() {
   const router = useRouter()
+  const { register } = useAuth()
+  const { toast } = useToast()
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
@@ -46,12 +38,6 @@ export default function AdminRegisterPage() {
       ...formData,
       [e.target.name]: e.target.value
     })
-  }
-
-  const fillDemoData = () => {
-    setFormData(DEMO_DATA)
-    setAgreeTerms(true)
-    setError('')
   }
 
   const validateForm = () => {
@@ -95,20 +81,51 @@ export default function AdminRegisterPage() {
     setError('')
 
     if (!validateForm()) {
+      toast({
+        title: "Validation Error",
+        description: error || "Please check all required fields.",
+        variant: "destructive",
+      })
       return
     }
 
     setIsLoading(true)
+    toast({
+      title: "Creating Account...",
+      description: "Please wait while we process your registration.",
+    })
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      await register({
+        email: formData.email,
+        password: formData.password,
+        fullName: formData.fullName,
+        role: 'admin',
+        phoneNumber: formData.phoneNumber,
+        adminId: formData.adminId,
+        university: formData.university,
+        position: formData.position,
+        department: formData.department,
+      })
+      
+      toast({
+        title: "Admin Account Created! 🎉",
+        description: "Your admin account is ready. Redirecting to login...",
+      })
+      
       setSuccess(true)
       
       setTimeout(() => {
         router.push('/login')
       }, 2000)
     } catch (err) {
-      setError('Registration failed. Please try again.')
+      const errorMessage = err instanceof Error ? err.message : 'Registration failed. Please try again.'
+      setError(errorMessage)
+      toast({
+        title: "Registration Failed",
+        description: errorMessage,
+        variant: "destructive",
+      })
     } finally {
       setIsLoading(false)
     }
@@ -407,20 +424,6 @@ export default function AdminRegisterPage() {
                   I agree to the <a href="#" className="font-semibold hover:underline" style={{ color: '#014b89' }}>Terms of Service</a> and <a href="#" className="font-semibold hover:underline" style={{ color: '#014b89' }}>Privacy Policy</a>
                 </label>
               </div>
-
-              {/* Demo Data Button */}
-              <button
-                type="button"
-                onClick={fillDemoData}
-                className="w-full px-4 py-3 text-sm font-semibold rounded-xl transition-all border-2"
-                style={{ color: '#f26918', borderColor: 'rgba(242, 105, 24, 0.2)', background: 'rgba(242, 105, 24, 0.05)' }}
-                onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(242, 105, 24, 0.1)'}
-                onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(242, 105, 24, 0.05)'}
-              >
-                <Sparkles className="w-4 h-4 inline mr-2" />
-                Fill Demo Data (For Testing)
-              </button>
-
               {/* Submit Button */}
               <Button
                 type="submit"

@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useAuth, type UserRole } from '@/lib/auth-context'
 import { Lock, Mail, Loader2, AlertCircle, Check, Users, UserCheck, Shield, ArrowRight } from 'lucide-react'
+import { useToast } from '@/hooks/use-toast'
 
 const DEMO_CREDENTIALS = [
   {
@@ -43,6 +44,7 @@ const DEMO_CREDENTIALS = [
 export default function LoginPage() {
   const router = useRouter()
   const { login } = useAuth()
+  const { toast } = useToast()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -54,11 +56,29 @@ export default function LoginPage() {
     setError('')
     setIsLoading(true)
 
+    toast({
+      title: "Signing in...",
+      description: "Please wait while we verify your credentials.",
+    })
+
     try {
       await login(email, password, selectedRole)
+      
+      toast({
+        title: "Login Successful! 🎉",
+        description: "Redirecting to your dashboard...",
+      })
+      
       router.push('/dashboard')
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Login failed')
+      const errorMessage = err instanceof Error ? err.message : 'Login failed'
+      setError(errorMessage)
+      
+      toast({
+        title: "Login Failed",
+        description: errorMessage,
+        variant: "destructive",
+      })
     } finally {
       setIsLoading(false)
     }

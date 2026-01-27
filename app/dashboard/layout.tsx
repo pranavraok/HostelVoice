@@ -68,7 +68,7 @@ export default function DashboardLayout({
           { href: '/dashboard/analytics', label: 'Analytics', icon: BarChart3, color: '#014b89' },
           { href: '/dashboard/announcements-manage', label: 'Announcements', icon: Bell, color: '#f26918' },
           { href: '/dashboard/management', label: 'Management', icon: Settings, color: '#014b89' },
-          { href: '/dashboard/users', label: 'Users', icon: Users, color: '#f26918' }
+          { href: '/dashboard/user-approvals', label: 'User Approvals', icon: Users, color: '#f26918' }
         ]
       default:
         return baseItems

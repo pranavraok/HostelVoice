@@ -6,21 +6,14 @@ import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { AlertCircle, Check, Eye, EyeOff, ArrowLeft, Users, Sparkles } from 'lucide-react'
-
-const DEMO_DATA = {
-  fullName: 'John Doe',
-  email: 'john@college.edu',
-  studentId: 'STU2025001',
-  phoneNumber: '+91 9876543210',
-  hostel: 'Block A',
-  roomNumber: '101',
-  password: 'password123',
-  confirmPassword: 'password123'
-}
+import { AlertCircle, Check, Eye, EyeOff, ArrowLeft, Users, Sparkles, Clock } from 'lucide-react'
+import { useAuth } from '@/lib/auth-context'
+import { useToast } from '@/hooks/use-toast'
 
 export default function StudentRegisterPage() {
   const router = useRouter()
+  const { register } = useAuth()
+  const { toast } = useToast()
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
@@ -82,32 +75,56 @@ export default function StudentRegisterPage() {
     return true
   }
 
-  const fillDemoData = () => {
-    setFormData(DEMO_DATA)
-    setAgreeTerms(true)
-    setError('')
-  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
 
     if (!validateForm()) {
+      toast({
+        title: "Validation Error",
+        description: error || "Please check all required fields.",
+        variant: "destructive",
+      })
       return
     }
 
     setIsLoading(true)
+    toast({
+      title: "Creating Account...",
+      description: "Please wait while we process your registration.",
+    })
 
     try {
-      // Simulate registration
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      await register({
+        email: formData.email,
+        password: formData.password,
+        fullName: formData.fullName,
+        role: 'student',
+        phoneNumber: formData.phoneNumber,
+        hostel: formData.hostel,
+        roomNumber: formData.roomNumber,
+        studentId: formData.studentId,
+      })
+      
+      toast({
+        title: "Registration Successful! 🎉",
+        description: "Your account is pending admin approval. You'll be notified once approved.",
+      })
+      
       setSuccess(true)
       
       setTimeout(() => {
         router.push('/login')
-      }, 2000)
+      }, 3000)
     } catch (err) {
-      setError('Registration failed. Please try again.')
+      const errorMessage = err instanceof Error ? err.message : 'Registration failed. Please try again.'
+      setError(errorMessage)
+      toast({
+        title: "Registration Failed",
+        description: errorMessage,
+        variant: "destructive",
+      })
     } finally {
       setIsLoading(false)
     }
@@ -144,10 +161,10 @@ export default function StudentRegisterPage() {
 
         <div className="bg-white rounded-3xl shadow-2xl p-12 max-w-md w-full text-center space-y-6 relative z-10 border-2 animate-scale-in" style={{ borderColor: 'rgba(1, 75, 137, 0.1)' }}>
           <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto" style={{ background: 'rgba(242, 105, 24, 0.1)' }}>
-            <Check className="w-10 h-10" style={{ color: '#f26918' }} />
+            <Clock className="w-10 h-10" style={{ color: '#f26918' }} />
           </div>
-          <h2 className="text-3xl font-bold" style={{ color: '#014b89' }}>Account Created!</h2>
-          <p className="text-gray-600 text-lg">Your student account has been successfully created. Redirecting to login...</p>
+          <h2 className="text-3xl font-bold" style={{ color: '#014b89' }}>Registration Submitted!</h2>
+          <p className="text-gray-600 text-lg">Your student account is pending admin approval. You'll receive a notification once your account is approved. Please check back later to login.</p>
           <div className="flex items-center justify-center gap-2">
             <div className="w-2 h-2 rounded-full animate-pulse" style={{ background: '#014b89' }}></div>
             <div className="w-2 h-2 rounded-full animate-pulse" style={{ background: '#f26918', animationDelay: '0.2s' }}></div>
@@ -390,20 +407,6 @@ export default function StudentRegisterPage() {
                   I agree to the <a href="#" className="font-semibold hover:underline" style={{ color: '#014b89' }}>Terms of Service</a> and <a href="#" className="font-semibold hover:underline" style={{ color: '#014b89' }}>Privacy Policy</a>
                 </label>
               </div>
-
-              {/* Demo Data Button */}
-              <button
-                type="button"
-                onClick={fillDemoData}
-                className="w-full px-4 py-3 text-sm font-semibold rounded-xl transition-all border-2"
-                style={{ color: '#f26918', borderColor: 'rgba(242, 105, 24, 0.2)', background: 'rgba(242, 105, 24, 0.05)' }}
-                onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(242, 105, 24, 0.1)'}
-                onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(242, 105, 24, 0.05)'}
-              >
-                <Sparkles className="w-4 h-4 inline mr-2" />
-                Fill Demo Data (For Testing)
-              </button>
-
               {/* Submit Button */}
               <Button
                 type="submit"
