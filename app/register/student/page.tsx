@@ -6,6 +6,7 @@ import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import CollegeEmailInput from '@/components/college-email-input'
 import { AlertCircle, Check, Eye, EyeOff, ArrowLeft, Users, Sparkles, Clock } from 'lucide-react'
 import { useAuth } from '@/lib/auth-context'
 import { useToast } from '@/hooks/use-toast'
@@ -20,6 +21,7 @@ export default function StudentRegisterPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [agreeTerms, setAgreeTerms] = useState(false)
+  const [isEmailValid, setIsEmailValid] = useState(false)
 
   const [formData, setFormData] = useState({
     fullName: '',
@@ -44,8 +46,12 @@ export default function StudentRegisterPage() {
       setError('Full name is required')
       return false
     }
-    if (!formData.email.trim() || !formData.email.includes('@')) {
-      setError('Valid email is required')
+    if (!formData.email.trim()) {
+      setError('Email is required')
+      return false
+    }
+    if (!isEmailValid) {
+      setError('Please use a valid college email (.edu or .edu.in)')
       return false
     }
     if (!formData.studentId.trim()) {
@@ -281,14 +287,13 @@ export default function StudentRegisterPage() {
 
                 {/* Email */}
                 <div>
-                  <label className="block text-sm font-bold text-gray-900 mb-2">Email *</label>
-                  <Input
-                    type="email"
-                    name="email"
-                    placeholder="john@college.edu"
+                  <CollegeEmailInput
                     value={formData.email}
-                    onChange={handleChange}
-                    className="w-full border-2 border-gray-200 focus:border-[#014b89] focus:ring-[#014b89] rounded-xl h-11 sm:h-12 transition-all text-sm sm:text-base"
+                    onChange={(value) => setFormData({ ...formData, email: value })}
+                    onValidationChange={setIsEmailValid}
+                    placeholder="john@college.edu"
+                    label="Email"
+                    required
                   />
                 </div>
 
