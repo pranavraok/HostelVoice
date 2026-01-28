@@ -37,13 +37,16 @@ import {
   Facebook,
   Instagram,
   Youtube,
-  MapPin
+  MapPin,
+  Menu,
+  X
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
 export default function LandingPage() {
   const [scrollY, setScrollY] = useState(0)
   const [isInView, setIsInView] = useState(false)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const featuresRef = useRef(null)
 
   useEffect(() => {
@@ -165,41 +168,78 @@ export default function LandingPage() {
       <div className="absolute bottom-40 left-10 w-96 h-96 rounded-full opacity-10 blur-3xl animate-float" style={{ background: '#f26918', animationDelay: '2s' }}></div>
       <div className="absolute top-1/2 right-1/4 w-64 h-64 rounded-full opacity-8 blur-3xl animate-float" style={{ background: '#014b89', animationDelay: '4s' }}></div>
 
-      {/* Navigation */}
+      {/* Navigation - Mobile Optimized */}
       <nav className="fixed top-0 w-full bg-white/80 backdrop-blur-xl border-b border-gray-200 z-50 shadow-sm">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3 animate-slide-in-left">
-            <Image 
-              src="/logo/logo.png" 
-              alt="HostelVoice Logo" 
-              width={2000} 
-              height={70} 
-              className="h-16 w-auto"
-              priority
-            />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
+          <div className="flex items-center justify-between">
+            {/* Logo */}
+            <div className="flex items-center gap-3 animate-slide-in-left">
+              <Image 
+                src="/logo/logo.png" 
+                alt="HostelVoice Logo" 
+                width={2000} 
+                height={70} 
+                className="h-12 sm:h-14 md:h-16 w-auto"
+                priority
+              />
+            </div>
+
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center gap-6 animate-slide-in-right">
+              <Link href="/login" className="text-gray-700 hover:text-[#014b89] transition-colors font-semibold text-sm">
+                Sign In
+              </Link>
+              <Link href="/register">
+                <Button className="text-white border-0 shadow-lg hover:shadow-xl transition-all hover:scale-105 font-semibold" style={{ background: '#014b89' }}>
+                  Register
+                  <ArrowRight className="ml-2 w-4 h-4" />
+                </Button>
+              </Link>
+            </div>
+
+            {/* Mobile Menu Button */}
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="md:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors"
+              aria-label="Toggle menu"
+            >
+              {mobileMenuOpen ? (
+                <X className="w-6 h-6 text-gray-700" />
+              ) : (
+                <Menu className="w-6 h-6 text-gray-700" />
+              )}
+            </button>
           </div>
-          <div className="flex items-center gap-6 animate-slide-in-right">
-            <Link href="/login" className="text-gray-700 hover:text-[#014b89] transition-colors font-semibold text-sm">
-              Sign In
-            </Link>
-            <Link href="/register">
-              <Button className="text-white border-0 shadow-lg hover:shadow-xl transition-all hover:scale-105 font-semibold" style={{ background: '#014b89' }}>
-                Register
-                <ArrowRight className="ml-2 w-4 h-4" />
-              </Button>
-            </Link>
-          </div>
+
+          {/* Mobile Menu Dropdown */}
+          {mobileMenuOpen && (
+            <div className="md:hidden pt-4 pb-3 space-y-3 animate-slide-up border-t border-gray-100 mt-3">
+              <Link 
+                href="/login" 
+                className="block text-center py-2 text-gray-700 hover:text-[#014b89] transition-colors font-semibold text-sm"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Sign In
+              </Link>
+              <Link href="/register" onClick={() => setMobileMenuOpen(false)}>
+                <Button className="w-full text-white border-0 shadow-lg font-semibold" style={{ background: '#014b89' }}>
+                  Register
+                  <ArrowRight className="ml-2 w-4 h-4" />
+                </Button>
+              </Link>
+            </div>
+          )}
         </div>
       </nav>
 
-      {/* Hero Section with Ecosystem Diagram */}
-      <section className="pt-32 pb-24 px-6 relative z-10">
+      {/* Hero Section - Mobile Optimized */}
+      <section className="pt-24 sm:pt-28 md:pt-32 pb-12 sm:pb-16 md:pb-24 px-4 sm:px-6 relative z-10">
         <div className="max-w-7xl mx-auto">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
+          <div className="grid lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-16 items-center">
             {/* Left Content */}
-            <div className="space-y-8">
+            <div className="space-y-6 sm:space-y-8 text-center lg:text-left">
               <h1 
-                className="text-5xl md:text-6xl lg:text-7xl font-bold leading-tight animate-slide-up"
+                className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold leading-tight animate-slide-up"
                 style={{ animationDelay: '0.2s', color: '#014b89' }}
               >
                 Manage Your Hostel{' '}
@@ -207,45 +247,45 @@ export default function LandingPage() {
               </h1>
 
               <p 
-                className="text-lg md:text-xl text-gray-600 leading-relaxed animate-slide-up"
+                className="text-base sm:text-lg md:text-xl text-gray-600 leading-relaxed animate-slide-up max-w-2xl mx-auto lg:mx-0"
                 style={{ animationDelay: '0.3s' }}
               >
                 Empower students, streamline caretaker workflows, and give admins complete control with a unified platform designed for modern hostel communities.
               </p>
 
               <div 
-                className="flex flex-col sm:flex-row gap-4 animate-slide-up"
+                className="flex flex-col sm:flex-row gap-3 sm:gap-4 animate-slide-up justify-center lg:justify-start"
                 style={{ animationDelay: '0.4s' }}
               >
-                <Link href="/register">
-                  <Button size="lg" className="text-white border-0 px-8 shadow-xl hover:shadow-2xl transition-all group text-base font-semibold" style={{ background: '#014b89' }}>
+                <Link href="/register" className="w-full sm:w-auto">
+                  <Button size="lg" className="w-full sm:w-auto text-white border-0 px-6 sm:px-8 shadow-xl hover:shadow-2xl transition-all group text-sm sm:text-base font-semibold" style={{ background: '#014b89' }}>
                     Get Started
-                    <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                    <ArrowRight className="ml-2 w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform" />
                   </Button>
                 </Link>
-                <Link href="/features">
-                  <Button size="lg" variant="outline" className="border-2 hover:text-white font-semibold text-base transition-all" style={{ borderColor: '#f26918', color: '#f26918' }} onMouseEnter={(e) => e.currentTarget.style.background = '#f26918'} onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}>
+                <Link href="/features" className="w-full sm:w-auto">
+                  <Button size="lg" variant="outline" className="w-full sm:w-auto border-2 hover:text-white font-semibold text-sm sm:text-base transition-all" style={{ borderColor: '#f26918', color: '#f26918' }} onMouseEnter={(e) => e.currentTarget.style.background = '#f26918'} onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}>
                     Explore Features
-                    <Sparkles className="ml-2 w-5 h-5" />
+                    <Sparkles className="ml-2 w-4 h-4 sm:w-5 sm:h-5" />
                   </Button>
                 </Link>
               </div>
 
               {/* Trust Indicators */}
-              <div className="flex items-center gap-8 pt-4 animate-slide-up" style={{ animationDelay: '0.5s' }}>
+              <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 sm:gap-8 pt-4 animate-slide-up" style={{ animationDelay: '0.5s' }}>
                 <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-5 h-5" style={{ color: '#f26918' }} />
-                  <span className="text-sm text-gray-700 font-medium">60% Time Saved</span>
+                  <CheckCircle2 className="w-5 h-5 flex-shrink-0" style={{ color: '#f26918' }} />
+                  <span className="text-sm text-gray-700 font-medium whitespace-nowrap">60% Time Saved</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-5 h-5" style={{ color: '#f26918' }} />
-                  <span className="text-sm text-gray-700 font-medium">50% Faster Resolution</span>
+                  <CheckCircle2 className="w-5 h-5 flex-shrink-0" style={{ color: '#f26918' }} />
+                  <span className="text-sm text-gray-700 font-medium whitespace-nowrap">50% Faster Resolution</span>
                 </div>
               </div>
             </div>
 
-            {/* Right - Ecosystem Circular Diagram */}
-            <div className="relative h-[600px] hidden lg:block">
+            {/* Right - Ecosystem Circular Diagram - Hidden on Mobile, Visible on Large Screens */}
+            <div className="relative h-[400px] sm:h-[500px] lg:h-[600px] hidden lg:block">
               {/* Container to prevent overflow */}
               <div className="absolute inset-0 flex items-center justify-center">
                 {/* SVG Connecting Circles */}
@@ -388,6 +428,7 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* Rest of your sections remain unchanged... */}
       {/* Features Section */}
       <section ref={featuresRef} className="py-24 px-6 relative z-10">
         <div className="max-w-7xl mx-auto">
