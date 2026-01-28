@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { CheckCircle, Clock, AlertCircle, MessageSquare } from 'lucide-react'
+import { CheckCircle, Clock, AlertCircle, MessageSquare, X } from 'lucide-react'
 
 interface IssueDetail {
   id: string
@@ -60,6 +60,7 @@ export function CaretakerIssueManager() {
   ])
 
   const [selectedIssue, setSelectedIssue] = useState<IssueDetail | null>(null)
+  const [showMobileDetails, setShowMobileDetails] = useState(false)
   const [resolution, setResolution] = useState('')
 
   const handleStatusChange = (issueId: string, newStatus: IssueDetail['status']) => {
@@ -83,6 +84,12 @@ export function CaretakerIssueManager() {
     ))
     setResolution('')
     setSelectedIssue(null)
+    setShowMobileDetails(false)
+  }
+
+  const handleIssueClick = (issue: IssueDetail) => {
+    setSelectedIssue(issue)
+    setShowMobileDetails(true)
   }
 
   const getPriorityColor = (priority: IssueDetail['priority']) => {
@@ -97,11 +104,11 @@ export function CaretakerIssueManager() {
   const getStatusIcon = (status: IssueDetail['status']) => {
     switch (status) {
       case 'resolved':
-        return <CheckCircle className="w-5 h-5" style={{ color: '#10b981' }} />
+        return <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5" style={{ color: '#10b981' }} />
       case 'in-progress':
-        return <Clock className="w-5 h-5" style={{ color: '#f26918' }} />
+        return <Clock className="w-4 h-4 sm:w-5 sm:h-5" style={{ color: '#f26918' }} />
       default:
-        return <AlertCircle className="w-5 h-5" style={{ color: '#014b89' }} />
+        return <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5" style={{ color: '#014b89' }} />
     }
   }
 
@@ -122,6 +129,109 @@ export function CaretakerIssueManager() {
     { label: 'In Progress', value: issues.filter(i => i.status === 'in-progress').length, color: '#f26918', bgColor: 'rgba(242, 105, 24, 0.1)' },
     { label: 'Resolved', value: issues.filter(i => i.status === 'resolved').length, color: '#10b981', bgColor: 'rgba(16, 185, 129, 0.1)' }
   ]
+
+  // Details Panel Component (reusable for desktop and mobile)
+  const DetailsPanel = ({ onClose }: { onClose?: () => void }) => (
+    <div className="bg-white border-2 border-gray-200 rounded-2xl sm:rounded-3xl p-5 sm:p-6 md:p-8 shadow-xl h-full overflow-y-auto">
+      <div className="flex items-center justify-between mb-4 sm:mb-6">
+        <h3 className="text-xl sm:text-2xl font-bold" style={{ color: '#014b89' }}>Issue Details</h3>
+        {onClose && (
+          <button
+            onClick={onClose}
+            className="lg:hidden w-9 h-9 rounded-lg flex items-center justify-center hover:bg-gray-100 transition-colors"
+          >
+            <X className="w-5 h-5 text-gray-600" />
+          </button>
+        )}
+      </div>
+
+      <div className="space-y-4 sm:space-y-6">
+        {/* Title */}
+        <div>
+          <p className="text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">Title</p>
+          <p className="font-bold text-sm sm:text-base text-gray-900 break-words">{selectedIssue?.title}</p>
+        </div>
+
+        {/* Description */}
+        <div>
+          <p className="text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">Description</p>
+          <p className="text-xs sm:text-sm text-gray-700 leading-relaxed break-words">{selectedIssue?.description}</p>
+        </div>
+
+        {/* Status */}
+        <div>
+          <p className="text-xs font-bold text-gray-500 mb-3 uppercase tracking-wider">Status</p>
+          <div className="flex gap-2 flex-wrap">
+            {(['open', 'in-progress', 'resolved'] as const).map((status) => {
+              const statusColor = getStatusColor(status)
+              return (
+                <button
+                  key={status}
+                  onClick={() => selectedIssue && handleStatusChange(selectedIssue.id, status)}
+                  className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl text-xs font-bold transition-all border-2"
+                  style={{
+                    background: selectedIssue?.status === status ? statusColor.bg : '#f3f4f6',
+                    color: selectedIssue?.status === status ? statusColor.text : '#6b7280',
+                    borderColor: selectedIssue?.status === status ? statusColor.border : '#e5e7eb'
+                  }}
+                >
+                  {status.replace('-', ' ').toUpperCase()}
+                </button>
+              )
+            })}
+          </div>
+        </div>
+
+        {/* Reporter */}
+        <div>
+          <p className="text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">Reported By</p>
+          <p className="text-xs sm:text-sm font-semibold text-gray-900">{selectedIssue?.reportedBy}</p>
+        </div>
+
+        {/* Resolution */}
+        {selectedIssue?.resolution && (
+          <div className="rounded-xl sm:rounded-2xl p-3 sm:p-4 border-2" style={{ background: 'rgba(16, 185, 129, 0.1)', borderColor: 'rgba(16, 185, 129, 0.3)' }}>
+            <p className="text-xs font-bold mb-2 uppercase tracking-wider" style={{ color: '#10b981' }}>Resolution</p>
+            <p className="text-xs sm:text-sm break-words" style={{ color: '#059669' }}>{selectedIssue.resolution}</p>
+          </div>
+        )}
+
+        {/* Add Resolution */}
+        {selectedIssue?.status !== 'resolved' && (
+          <div>
+            <p className="text-xs font-bold text-gray-500 mb-3 uppercase tracking-wider">Add Resolution</p>
+            <textarea
+              value={resolution}
+              onChange={(e) => setResolution(e.target.value)}
+              placeholder="Describe how this issue was resolved..."
+              className="w-full px-3 sm:px-4 py-2 sm:py-3 rounded-xl border-2 border-gray-200 focus:border-[#f26918] focus:ring-[#f26918] resize-none font-medium text-xs sm:text-sm"
+              rows={4}
+            />
+            <Button
+              onClick={() => selectedIssue && handleResolve(selectedIssue.id)}
+              disabled={!resolution.trim()}
+              className="w-full mt-3 text-white font-bold h-11 sm:h-12 rounded-xl shadow-lg hover:shadow-xl transition-all disabled:opacity-50 text-sm sm:text-base"
+              style={{ background: '#10b981' }}
+              onMouseEnter={(e) => !resolution.trim() ? null : e.currentTarget.style.background = '#059669'}
+              onMouseLeave={(e) => e.currentTarget.style.background = '#10b981'}
+            >
+              Mark as Resolved
+            </Button>
+          </div>
+        )}
+
+        {/* Dates */}
+        <div className="border-t-2 border-gray-200 pt-3 sm:pt-4 space-y-2">
+          <p className="text-xs text-gray-600">
+            <span className="font-bold">Created:</span> {selectedIssue && new Date(selectedIssue.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
+          </p>
+          <p className="text-xs text-gray-600">
+            <span className="font-bold">Updated:</span> {selectedIssue && new Date(selectedIssue.updatedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
+          </p>
+        </div>
+      </div>
+    </div>
+  )
 
   return (
     <div className="min-h-screen bg-white relative overflow-hidden">
@@ -153,64 +263,64 @@ export function CaretakerIssueManager() {
         }}
       />
 
-      <div className="p-4 md:p-8 lg:p-12 relative z-10">
-        {/* Header */}
-        <div className="mb-8 md:mb-12 animate-fade-in">
-          <h1 className="text-3xl md:text-5xl font-bold mb-2" style={{ color: '#014b89' }}>Issue Management</h1>
-          <p className="text-base md:text-lg text-gray-600">Manage and track all reported hostel issues</p>
+      <div className="p-4 sm:p-6 md:p-8 lg:p-12 relative z-10">
+        {/* Header - Mobile Optimized */}
+        <div className="mb-6 sm:mb-8 md:mb-12 animate-fade-in">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-1 sm:mb-2" style={{ color: '#014b89' }}>Issue Management</h1>
+          <p className="text-sm sm:text-base md:text-lg text-gray-600">Manage and track all reported hostel issues</p>
         </div>
 
-        {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-8 md:mb-12">
+        {/* Stats - Mobile Optimized */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 md:gap-6 mb-6 sm:mb-8 md:mb-12">
           {stats.map((stat, i) => (
             <div 
               key={stat.label} 
-              className="bg-white border-2 border-gray-100 rounded-2xl p-6 hover:shadow-xl transition-all animate-fade-in"
+              className="bg-white border-2 border-gray-100 rounded-xl sm:rounded-2xl p-4 sm:p-6 hover:shadow-xl transition-all animate-fade-in"
               style={{ animationDelay: `${i * 0.1}s` }}
             >
-              <p className="text-sm font-semibold text-gray-600 mb-2 uppercase tracking-wide">{stat.label}</p>
-              <p className="text-4xl font-bold" style={{ color: stat.color }}>{stat.value}</p>
+              <p className="text-xs font-semibold text-gray-600 mb-1 sm:mb-2 uppercase tracking-wide">{stat.label}</p>
+              <p className="text-2xl sm:text-3xl md:text-4xl font-bold" style={{ color: stat.color }}>{stat.value}</p>
             </div>
           ))}
         </div>
 
-        {/* Main Content */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
+        {/* Main Content - Mobile Optimized */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
           {/* Issues List */}
           <div className="lg:col-span-2">
-            <h2 className="text-2xl md:text-3xl font-bold mb-6" style={{ color: '#014b89' }}>Active Issues</h2>
-            <div className="space-y-4">
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-4 sm:mb-6" style={{ color: '#014b89' }}>Active Issues</h2>
+            <div className="space-y-3 sm:space-y-4">
               {issues.map((issue, i) => {
                 const priorityColor = getPriorityColor(issue.priority)
                 const statusColor = getStatusColor(issue.status)
                 return (
                   <div
                     key={issue.id}
-                    className={`bg-white border-2 rounded-2xl p-6 cursor-pointer transition-all hover:shadow-xl animate-fade-in ${
-                      selectedIssue?.id === issue.id ? 'ring-4' : ''
+                    className={`bg-white border-2 rounded-xl sm:rounded-2xl p-4 sm:p-6 cursor-pointer transition-all hover:shadow-xl animate-fade-in ${
+                      selectedIssue?.id === issue.id ? 'ring-2 sm:ring-4' : ''
                     }`}
                     style={{ 
                       borderColor: selectedIssue?.id === issue.id ? '#f26918' : '#f3f4f6',
                       outlineColor: selectedIssue?.id === issue.id ? 'rgba(242, 105, 24, 0.2)' : undefined,
                       animationDelay: `${i * 0.1}s`
                     }}
-                    onClick={() => setSelectedIssue(issue)}
+                    onClick={() => handleIssueClick(issue)}
                   >
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="flex items-center gap-3 flex-1">
+                    <div className="flex items-start justify-between mb-3 sm:mb-4">
+                      <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
                         <div 
-                          className="w-10 h-10 rounded-xl flex items-center justify-center"
+                          className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl flex items-center justify-center flex-shrink-0"
                           style={{ background: statusColor.bg }}
                         >
                           {getStatusIcon(issue.status)}
                         </div>
-                        <div>
-                          <h3 className="font-bold text-lg text-gray-900">{issue.title}</h3>
-                          <p className="text-xs text-gray-500 font-medium mt-1">Issue ID: #{issue.id}</p>
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-bold text-sm sm:text-base md:text-lg text-gray-900 break-words">{issue.title}</h3>
+                          <p className="text-[10px] sm:text-xs text-gray-500 font-medium mt-1">Issue ID: #{issue.id}</p>
                         </div>
                       </div>
                       <span 
-                        className="px-3 py-1.5 rounded-xl text-xs font-bold border-2"
+                        className="px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg sm:rounded-xl text-[10px] sm:text-xs font-bold border-2 flex-shrink-0 ml-2"
                         style={{ 
                           background: priorityColor.bg, 
                           color: priorityColor.text,
@@ -222,13 +332,13 @@ export function CaretakerIssueManager() {
                     </div>
 
                     <div className="flex flex-wrap gap-2">
-                      <span className="px-3 py-1.5 rounded-xl bg-gray-100 text-gray-700 text-xs font-semibold border-2 border-gray-200">
+                      <span className="px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg sm:rounded-xl bg-gray-100 text-gray-700 text-[10px] sm:text-xs font-semibold border-2 border-gray-200">
                         Room {issue.roomNumber}
                       </span>
-                      <span className="px-3 py-1.5 rounded-xl bg-gray-100 text-gray-700 text-xs font-semibold border-2 border-gray-200">
+                      <span className="px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg sm:rounded-xl bg-gray-100 text-gray-700 text-[10px] sm:text-xs font-semibold border-2 border-gray-200">
                         {issue.category}
                       </span>
-                      <span className="px-3 py-1.5 rounded-xl bg-gray-100 text-gray-700 text-xs font-semibold border-2 border-gray-200">
+                      <span className="px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg sm:rounded-xl bg-gray-100 text-gray-700 text-[10px] sm:text-xs font-semibold border-2 border-gray-200">
                         {new Date(issue.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                       </span>
                     </div>
@@ -238,100 +348,14 @@ export function CaretakerIssueManager() {
             </div>
           </div>
 
-          {/* Issue Details Panel */}
-          <div className="lg:col-span-1">
+          {/* Issue Details Panel - Desktop Only */}
+          <div className="hidden lg:block lg:col-span-1">
             {selectedIssue ? (
-              <div className="bg-white border-2 border-gray-200 rounded-3xl p-6 md:p-8 sticky top-4 shadow-xl">
-                <h3 className="text-2xl font-bold mb-6" style={{ color: '#014b89' }}>Issue Details</h3>
-
-                <div className="space-y-6">
-                  {/* Title */}
-                  <div>
-                    <p className="text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">Title</p>
-                    <p className="font-bold text-gray-900">{selectedIssue.title}</p>
-                  </div>
-
-                  {/* Description */}
-                  <div>
-                    <p className="text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">Description</p>
-                    <p className="text-sm text-gray-700 leading-relaxed">{selectedIssue.description}</p>
-                  </div>
-
-                  {/* Status */}
-                  <div>
-                    <p className="text-xs font-bold text-gray-500 mb-3 uppercase tracking-wider">Status</p>
-                    <div className="flex gap-2 flex-wrap">
-                      {(['open', 'in-progress', 'resolved'] as const).map((status) => {
-                        const statusColor = getStatusColor(status)
-                        return (
-                          <button
-                            key={status}
-                            onClick={() => handleStatusChange(selectedIssue.id, status)}
-                            className="px-4 py-2 rounded-xl text-xs font-bold transition-all border-2"
-                            style={{
-                              background: selectedIssue.status === status ? statusColor.bg : '#f3f4f6',
-                              color: selectedIssue.status === status ? statusColor.text : '#6b7280',
-                              borderColor: selectedIssue.status === status ? statusColor.border : '#e5e7eb'
-                            }}
-                          >
-                            {status.replace('-', ' ').toUpperCase()}
-                          </button>
-                        )
-                      })}
-                    </div>
-                  </div>
-
-                  {/* Reporter */}
-                  <div>
-                    <p className="text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">Reported By</p>
-                    <p className="text-sm font-semibold text-gray-900">{selectedIssue.reportedBy}</p>
-                  </div>
-
-                  {/* Resolution */}
-                  {selectedIssue.resolution && (
-                    <div className="rounded-2xl p-4 border-2" style={{ background: 'rgba(16, 185, 129, 0.1)', borderColor: 'rgba(16, 185, 129, 0.3)' }}>
-                      <p className="text-xs font-bold mb-2 uppercase tracking-wider" style={{ color: '#10b981' }}>Resolution</p>
-                      <p className="text-sm" style={{ color: '#059669' }}>{selectedIssue.resolution}</p>
-                    </div>
-                  )}
-
-                  {/* Add Resolution */}
-                  {selectedIssue.status !== 'resolved' && (
-                    <div>
-                      <p className="text-xs font-bold text-gray-500 mb-3 uppercase tracking-wider">Add Resolution</p>
-                      <textarea
-                        value={resolution}
-                        onChange={(e) => setResolution(e.target.value)}
-                        placeholder="Describe how this issue was resolved..."
-                        className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#f26918] focus:ring-[#f26918] resize-none font-medium"
-                        rows={4}
-                      />
-                      <Button
-                        onClick={() => handleResolve(selectedIssue.id)}
-                        disabled={!resolution.trim()}
-                        className="w-full mt-3 text-white font-bold h-12 rounded-xl shadow-lg hover:shadow-xl transition-all disabled:opacity-50"
-                        style={{ background: '#10b981' }}
-                        onMouseEnter={(e) => !resolution.trim() ? null : e.currentTarget.style.background = '#059669'}
-                        onMouseLeave={(e) => e.currentTarget.style.background = '#10b981'}
-                      >
-                        Mark as Resolved
-                      </Button>
-                    </div>
-                  )}
-
-                  {/* Dates */}
-                  <div className="border-t-2 border-gray-200 pt-4 space-y-2">
-                    <p className="text-xs text-gray-600">
-                      <span className="font-bold">Created:</span> {new Date(selectedIssue.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
-                    </p>
-                    <p className="text-xs text-gray-600">
-                      <span className="font-bold">Updated:</span> {new Date(selectedIssue.updatedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
-                    </p>
-                  </div>
-                </div>
+              <div className="sticky top-4">
+                <DetailsPanel />
               </div>
             ) : (
-              <div className="bg-white border-2 border-gray-200 rounded-3xl p-12 text-center shadow-lg">
+              <div className="bg-white border-2 border-gray-200 rounded-3xl p-12 text-center shadow-lg sticky top-4">
                 <div 
                   className="w-20 h-20 rounded-full mx-auto mb-6 flex items-center justify-center"
                   style={{ background: 'rgba(242, 105, 24, 0.1)' }}
@@ -344,6 +368,17 @@ export function CaretakerIssueManager() {
           </div>
         </div>
       </div>
+
+      {/* Mobile Details Modal */}
+      {showMobileDetails && selectedIssue && (
+        <div className="lg:hidden fixed inset-0 bg-black/50 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
+          <div className="bg-white w-full h-[90vh] sm:h-auto sm:max-h-[85vh] sm:max-w-2xl sm:rounded-2xl overflow-hidden">
+            <div className="h-full overflow-y-auto">
+              <DetailsPanel onClose={() => { setShowMobileDetails(false); setSelectedIssue(null); }} />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
