@@ -170,57 +170,57 @@ export default function AnnouncementsPage() {
         }}
       />
 
-      <div className="max-w-6xl mx-auto px-4 pt-6 pb-24 md:px-8 md:pt-12 md:pb-12 relative z-10">
-        {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8 md:mb-12 animate-fade-in">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 md:px-8 pt-4 sm:pt-6 md:pt-12 pb-12 sm:pb-16 md:pb-24 relative z-10">
+        {/* Header - Mobile Optimized */}
+        <div className="flex flex-col gap-3 sm:gap-4 mb-6 sm:mb-8 md:mb-12 animate-fade-in">
           <div>
-            <h1 className="text-3xl md:text-5xl font-bold mb-2" style={{ color: '#014b89' }}>
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-1 sm:mb-2" style={{ color: '#014b89' }}>
               Announcements
             </h1>
-            <p className="text-base md:text-lg text-gray-600">
+            <p className="text-sm sm:text-base md:text-lg text-gray-600">
               Stay updated with the latest hostel announcements and news
             </p>
           </div>
-          <div className="flex gap-3">
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
             <Button
               onClick={fetchAnnouncements}
               variant="outline"
-              className="gap-2 h-12 rounded-xl font-semibold border-2"
+              className="gap-2 h-11 sm:h-12 rounded-xl font-semibold border-2 text-sm sm:text-base"
               style={{ borderColor: '#014b89', color: '#014b89' }}
               disabled={isLoading}
             >
-              <RefreshCw className={`w-5 h-5 ${isLoading ? 'animate-spin' : ''}`} />
+              <RefreshCw className={`w-4 h-4 sm:w-5 sm:h-5 ${isLoading ? 'animate-spin' : ''}`} />
               Refresh
             </Button>
             {(user.role === 'caretaker' || user.role === 'admin') && (
               <Button
                 onClick={() => { setShowForm(!showForm); setEditingId(null); setFormData({ title: '', content: '', category: 'general', priority: 'normal' }); }}
-                className="text-white font-bold gap-2 w-full md:w-auto h-12 md:h-14 rounded-xl shadow-lg hover:shadow-xl transition-all text-base"
+                className="text-white font-bold gap-2 w-full sm:flex-1 md:w-auto h-11 sm:h-12 md:h-14 rounded-xl shadow-lg hover:shadow-xl transition-all text-sm sm:text-base"
                 style={{ background: '#f26918' }}
               >
-                <Plus className="w-5 h-5" />
+                <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
                 Post Announcement
               </Button>
             )}
           </div>
         </div>
 
-        {/* Post Form */}
+        {/* Post Form - Mobile Optimized */}
         {showForm && (user.role === 'caretaker' || user.role === 'admin') && (
-          <div className="bg-white border-2 rounded-3xl p-6 md:p-8 mb-8 shadow-xl animate-fade-in" style={{ borderColor: 'rgba(242, 105, 24, 0.2)' }}>
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl md:text-3xl font-bold" style={{ color: '#014b89' }}>
+          <div className="bg-white border-2 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 mb-6 sm:mb-8 shadow-xl animate-fade-in" style={{ borderColor: 'rgba(242, 105, 24, 0.2)' }}>
+            <div className="flex items-center justify-between mb-4 sm:mb-6">
+              <h2 className="text-xl sm:text-2xl md:text-3xl font-bold" style={{ color: '#014b89' }}>
                 {editingId ? 'Edit Announcement' : 'Create New Announcement'}
               </h2>
               <button
                 onClick={() => { setShowForm(false); setEditingId(null); }}
-                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                className="p-2 hover:bg-gray-100 rounded-lg transition-colors flex-shrink-0"
               >
-                <X className="w-6 h-6 text-gray-600" />
+                <X className="w-5 h-5 sm:w-6 sm:h-6 text-gray-600" />
               </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
               {/* Title */}
               <div>
                 <label className="text-sm font-bold text-gray-900 mb-2 block">Announcement Title *</label>
@@ -229,19 +229,19 @@ export default function AnnouncementsPage() {
                   placeholder="e.g., WiFi Maintenance Schedule"
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  className="border-2 border-gray-200 focus:border-[#f26918] focus:ring-[#f26918] rounded-xl h-12"
+                  className="border-2 border-gray-200 focus:border-[#f26918] focus:ring-[#f26918] rounded-xl h-11 sm:h-12 text-sm sm:text-base"
                   required
                 />
               </div>
 
-              {/* Category and Priority */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Category and Priority - Mobile Optimized */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                 <div>
                   <label className="text-sm font-bold text-gray-900 mb-2 block">Category *</label>
                   <select
                     value={formData.category}
                     onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                    className="w-full h-12 px-4 border-2 border-gray-200 rounded-xl focus:border-[#f26918] focus:ring-[#f26918] bg-white text-gray-900 font-medium transition-all"
+                    className="w-full h-11 sm:h-12 px-3 sm:px-4 border-2 border-gray-200 rounded-xl focus:border-[#f26918] focus:ring-[#f26918] bg-white text-gray-900 font-medium transition-all text-sm sm:text-base"
                   >
                     <option value="general">General</option>
                     <option value="maintenance">Maintenance</option>
@@ -255,7 +255,7 @@ export default function AnnouncementsPage() {
                   <select
                     value={formData.priority}
                     onChange={(e) => setFormData({ ...formData, priority: e.target.value })}
-                    className="w-full h-12 px-4 border-2 border-gray-200 rounded-xl focus:border-[#f26918] focus:ring-[#f26918] bg-white text-gray-900 font-medium transition-all"
+                    className="w-full h-11 sm:h-12 px-3 sm:px-4 border-2 border-gray-200 rounded-xl focus:border-[#f26918] focus:ring-[#f26918] bg-white text-gray-900 font-medium transition-all text-sm sm:text-base"
                   >
                     <option value="normal">Normal</option>
                     <option value="high">High (Pinned)</option>
@@ -270,17 +270,17 @@ export default function AnnouncementsPage() {
                   placeholder="Write your announcement here..."
                   value={formData.content}
                   onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#f26918] focus:ring-[#f26918] resize-none font-medium"
+                  className="w-full px-3 sm:px-4 py-2 sm:py-3 border-2 border-gray-200 rounded-xl focus:border-[#f26918] focus:ring-[#f26918] resize-none font-medium text-sm sm:text-base"
                   rows={5}
                   required
                 />
               </div>
 
-              {/* Buttons */}
-              <div className="flex flex-col sm:flex-row gap-3 pt-2">
+              {/* Buttons - Mobile Optimized */}
+              <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 pt-2">
                 <Button 
                   type="submit" 
-                  className="text-white font-bold w-full sm:flex-1 h-12 rounded-xl shadow-lg hover:shadow-xl transition-all"
+                  className="text-white font-bold w-full sm:flex-1 h-11 sm:h-12 rounded-xl shadow-lg hover:shadow-xl transition-all text-sm sm:text-base"
                   style={{ background: '#f26918' }}
                   disabled={isSubmitting}
                 >
@@ -290,7 +290,7 @@ export default function AnnouncementsPage() {
                   type="button"
                   onClick={() => { setShowForm(false); setEditingId(null); }}
                   variant="outline"
-                  className="border-2 w-full sm:w-auto h-12 rounded-xl font-semibold"
+                  className="border-2 w-full sm:w-auto h-11 sm:h-12 rounded-xl font-semibold text-sm sm:text-base"
                   style={{ borderColor: '#014b89', color: '#014b89' }}
                 >
                   Cancel
@@ -302,62 +302,62 @@ export default function AnnouncementsPage() {
 
         {/* Loading State */}
         {isLoading && (
-          <div className="flex flex-col items-center justify-center py-20">
-            <Loader2 className="w-12 h-12 animate-spin mb-4" style={{ color: '#014b89' }} />
-            <p className="text-gray-600 font-medium">Loading announcements...</p>
+          <div className="flex flex-col items-center justify-center py-12 sm:py-16 md:py-20">
+            <Loader2 className="w-10 h-10 sm:w-12 sm:h-12 animate-spin mb-4" style={{ color: '#014b89' }} />
+            <p className="text-sm sm:text-base text-gray-600 font-medium">Loading announcements...</p>
           </div>
         )}
 
         {/* Error State */}
         {error && !isLoading && (
-          <div className="bg-red-50 border-2 border-red-200 rounded-2xl p-8 text-center mb-8">
-            <Megaphone className="w-12 h-12 text-red-500 mx-auto mb-4" />
-            <h3 className="text-xl font-bold text-red-700 mb-2">Failed to Load Announcements</h3>
-            <p className="text-red-600 mb-4">{error}</p>
-            <Button onClick={fetchAnnouncements} className="bg-red-600 hover:bg-red-700 text-white">
+          <div className="bg-red-50 border-2 border-red-200 rounded-xl sm:rounded-2xl p-6 sm:p-8 text-center mb-6 sm:mb-8">
+            <Megaphone className="w-10 h-10 sm:w-12 sm:h-12 text-red-500 mx-auto mb-4" />
+            <h3 className="text-lg sm:text-xl font-bold text-red-700 mb-2">Failed to Load Announcements</h3>
+            <p className="text-sm sm:text-base text-red-600 mb-4">{error}</p>
+            <Button onClick={fetchAnnouncements} className="bg-red-600 hover:bg-red-700 text-white h-11 sm:h-12 text-sm sm:text-base">
               Try Again
             </Button>
           </div>
         )}
 
-        {/* Pinned Announcements */}
+        {/* Pinned Announcements - Mobile Optimized */}
         {!isLoading && !error && pinnedAnnouncements.length > 0 && (
-          <div className="mb-8 md:mb-12">
-            <h2 className="text-2xl md:text-3xl font-bold mb-6 flex items-center gap-3" style={{ color: '#014b89' }}>
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center animate-pulse-slow" style={{ background: 'rgba(242, 105, 24, 0.15)' }}>
-                <Pin className="w-5 h-5" style={{ color: '#f26918' }} />
+          <div className="mb-6 sm:mb-8 md:mb-12">
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-4 sm:mb-6 flex items-center gap-2 sm:gap-3" style={{ color: '#014b89' }}>
+              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl flex items-center justify-center animate-pulse-slow flex-shrink-0" style={{ background: 'rgba(242, 105, 24, 0.15)' }}>
+                <Pin className="w-4 h-4 sm:w-5 sm:h-5" style={{ color: '#f26918' }} />
               </div>
               Pinned Announcements
             </h2>
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               {pinnedAnnouncements.map((announcement, index) => {
                 const categoryColor = getCategoryColor(announcement.category)
                 return (
                   <div
                     key={announcement.id}
-                    className="bg-white border-2 rounded-2xl p-6 md:p-8 hover:shadow-xl transition-all duration-300 animate-fade-in"
+                    className="bg-white border-2 rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 hover:shadow-xl transition-all duration-300 animate-fade-in"
                     style={{ 
                       borderColor: 'rgba(242, 105, 24, 0.3)',
                       background: 'linear-gradient(to right, rgba(242, 105, 24, 0.05), transparent)',
                       animationDelay: `${index * 0.1}s`
                     }}
                   >
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-3">
-                          <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'rgba(242, 105, 24, 0.15)' }}>
-                            <Megaphone className="w-5 h-5" style={{ color: '#f26918' }} />
+                    <div className="flex items-start justify-between mb-3 sm:mb-4">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
+                          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: 'rgba(242, 105, 24, 0.15)' }}>
+                            <Megaphone className="w-4 h-4 sm:w-5 sm:h-5" style={{ color: '#f26918' }} />
                           </div>
-                          <h3 className="text-xl font-bold text-gray-900 flex-1">{announcement.title}</h3>
+                          <h3 className="text-base sm:text-lg md:text-xl font-bold text-gray-900 flex-1 min-w-0 break-words">{announcement.title}</h3>
                         </div>
-                        <p className="text-gray-700 leading-relaxed">{announcement.content}</p>
+                        <p className="text-sm sm:text-base text-gray-700 leading-relaxed break-words">{announcement.content}</p>
                       </div>
                     </div>
 
-                    {/* Metadata */}
-                    <div className="flex flex-wrap gap-2 pt-4 border-t-2 border-gray-100">
+                    {/* Metadata - Mobile Optimized */}
+                    <div className="flex flex-wrap gap-2 pt-3 sm:pt-4 border-t-2 border-gray-100">
                       <span 
-                        className="px-4 py-2 rounded-xl text-sm font-bold border-2 capitalize"
+                        className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl text-xs sm:text-sm font-bold border-2 capitalize"
                         style={{ 
                           background: categoryColor.bg, 
                           color: categoryColor.text,
@@ -367,12 +367,12 @@ export default function AnnouncementsPage() {
                         {announcement.category}
                       </span>
                       {announcement.creator && (
-                        <span className="px-4 py-2 rounded-xl text-sm bg-gray-100 text-gray-700 font-semibold border-2 border-gray-200">
+                        <span className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl text-xs sm:text-sm bg-gray-100 text-gray-700 font-semibold border-2 border-gray-200">
                           👤 {announcement.creator.full_name || 'Staff'}
                         </span>
                       )}
-                      <span className="px-4 py-2 rounded-xl text-sm bg-gray-100 text-gray-700 font-semibold border-2 border-gray-200">
-                        📅 {new Date(announcement.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                      <span className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl text-xs sm:text-sm bg-gray-100 text-gray-700 font-semibold border-2 border-gray-200">
+                        📅 {new Date(announcement.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
                       </span>
                       {(user.role === 'caretaker' || user.role === 'admin') && (
                         <div className="flex gap-2 ml-auto">
@@ -400,21 +400,21 @@ export default function AnnouncementsPage() {
           </div>
         )}
 
-        {/* Regular Announcements */}
+        {/* Regular Announcements - Mobile Optimized */}
         {!isLoading && !error && (
         <div>
-          <h2 className="text-2xl md:text-3xl font-bold mb-6" style={{ color: '#014b89' }}>Recent Announcements</h2>
-          <div className="space-y-4">
+          <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-4 sm:mb-6" style={{ color: '#014b89' }}>Recent Announcements</h2>
+          <div className="space-y-3 sm:space-y-4">
             {regularAnnouncements.length === 0 ? (
-              <div className="bg-white border-2 border-gray-200 rounded-3xl p-12 md:p-16 text-center shadow-lg">
+              <div className="bg-white border-2 border-gray-200 rounded-2xl sm:rounded-3xl p-8 sm:p-12 md:p-16 text-center shadow-lg">
                 <div 
-                  className="w-20 h-20 rounded-full mx-auto mb-6 flex items-center justify-center"
+                  className="w-16 h-16 sm:w-20 sm:h-20 rounded-full mx-auto mb-4 sm:mb-6 flex items-center justify-center"
                   style={{ background: 'rgba(1, 75, 137, 0.1)' }}
                 >
-                  <Megaphone className="w-10 h-10" style={{ color: '#014b89' }} />
+                  <Megaphone className="w-8 h-8 sm:w-10 sm:h-10" style={{ color: '#014b89' }} />
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-3">No announcements yet</h3>
-                <p className="text-gray-600 mb-6 max-w-md mx-auto">
+                <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2 sm:mb-3">No announcements yet</h3>
+                <p className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6 max-w-md mx-auto">
                   Check back later for important updates and news from the hostel management.
                 </p>
               </div>
@@ -424,20 +424,20 @@ export default function AnnouncementsPage() {
                 return (
                   <div
                     key={announcement.id}
-                    className="bg-white border-2 border-gray-200 rounded-2xl p-6 md:p-8 hover:border-gray-300 hover:shadow-xl transition-all duration-300 animate-fade-in"
+                    className="bg-white border-2 border-gray-200 rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 hover:border-gray-300 hover:shadow-xl transition-all duration-300 animate-fade-in"
                     style={{ animationDelay: `${index * 0.1}s` }}
                   >
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="flex-1">
-                        <h3 className="text-xl font-bold text-gray-900 mb-3">{announcement.title}</h3>
-                        <p className="text-gray-700 leading-relaxed">{announcement.content}</p>
+                    <div className="flex items-start justify-between mb-3 sm:mb-4">
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-base sm:text-lg md:text-xl font-bold text-gray-900 mb-2 sm:mb-3 break-words">{announcement.title}</h3>
+                        <p className="text-sm sm:text-base text-gray-700 leading-relaxed break-words">{announcement.content}</p>
                       </div>
                     </div>
 
-                    {/* Metadata */}
-                    <div className="flex flex-wrap gap-2 pt-4 border-t-2 border-gray-100">
+                    {/* Metadata - Mobile Optimized */}
+                    <div className="flex flex-wrap gap-2 pt-3 sm:pt-4 border-t-2 border-gray-100">
                       <span 
-                        className="px-4 py-2 rounded-xl text-sm font-bold border-2 capitalize"
+                        className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl text-xs sm:text-sm font-bold border-2 capitalize"
                         style={{ 
                           background: categoryColor.bg, 
                           color: categoryColor.text,
@@ -447,12 +447,12 @@ export default function AnnouncementsPage() {
                         {announcement.category}
                       </span>
                       {announcement.creator && (
-                        <span className="px-4 py-2 rounded-xl text-sm bg-gray-100 text-gray-700 font-semibold border-2 border-gray-200">
+                        <span className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl text-xs sm:text-sm bg-gray-100 text-gray-700 font-semibold border-2 border-gray-200">
                           👤 {announcement.creator.full_name || 'Staff'}
                         </span>
                       )}
-                      <span className="px-4 py-2 rounded-xl text-sm bg-gray-100 text-gray-700 font-semibold border-2 border-gray-200">
-                        📅 {new Date(announcement.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                      <span className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl text-xs sm:text-sm bg-gray-100 text-gray-700 font-semibold border-2 border-gray-200">
+                        📅 {new Date(announcement.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
                       </span>
                       {(user.role === 'caretaker' || user.role === 'admin') && (
                         <div className="flex gap-2 ml-auto">
