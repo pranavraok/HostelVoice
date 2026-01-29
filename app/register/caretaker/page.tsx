@@ -404,7 +404,7 @@ export default function CaretakerRegisterPage() {
                   style={{ accentColor: '#014b89' }}
                 />
                 <label htmlFor="terms" className="text-xs sm:text-sm text-gray-700 leading-relaxed">
-                  I agree to the <a href="#" className="font-semibold hover:underline" style={{ color: '#014b89' }}>Terms of Service</a> and <a href="#" className="font-semibold hover:underline" style={{ color: '#014b89' }}>Privacy Policy</a>
+                  I agree to the <a href="/terms" target="_blank" className="font-semibold hover:underline" style={{ color: '#014b89' }}>Terms of Service</a> and <a href="/privacy" target="_blank" className="font-semibold hover:underline" style={{ color: '#014b89' }}>Privacy Policy</a>
                 </label>
               </div>
 
