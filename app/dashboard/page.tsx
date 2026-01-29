@@ -1,7 +1,7 @@
 'use client'
 
 import { useAuth } from '@/lib/auth-context'
-import { AlertCircle, TrendingUp, Users, MessageSquare, Zap, BarChart3, ClipboardList, ArrowRight, CheckCircle2, Loader2 } from 'lucide-react'
+import { AlertCircle, TrendingUp, Users, MessageSquare, Zap, BarChart3, ClipboardList, ArrowRight, CheckCircle2, Loader2, Calendar, PlusCircle, UtensilsCrossed } from 'lucide-react'
 import Link from 'next/link'
 import { useState, useEffect, useCallback } from 'react'
 import { analyticsApi, issuesApi, announcementsApi, lostFoundApi, residentsApi, DashboardStats } from '@/lib/api'
@@ -68,7 +68,7 @@ function StudentDashboard({ user }: { user: any }) {
   const quickActions = [
     { title: 'Report Issue', description: 'Tell us about any problems', icon: AlertCircle, href: '/dashboard/issues', color: '#014b89' },
     { title: 'View Announcements', description: 'Check latest hostel updates', icon: MessageSquare, href: '/dashboard/announcements', color: '#014b89' },
-    { title: 'Lost & Found', description: 'Browse lost items', icon: Zap, href: '/dashboard/lost-found', color: '#014b89' }
+    { title: 'Leave', description: 'Apply and track leave requests', icon: Calendar, href: '/dashboard/student-leave', color: '#014b89' }
   ]
 
   return (
@@ -241,7 +241,7 @@ function CaretakerDashboard({ user }: { user: any }) {
   const managementLinks = [
     { title: 'Manage Issues', description: 'View and resolve issues', icon: ClipboardList, href: '/dashboard/issues/caretaker', color: '#014b89' },
     { title: 'Residents', description: 'Manage resident information', icon: Users, href: '/dashboard/residents', color: '#014b89' },
-    { title: 'Announcements', description: 'Post hostel updates', icon: MessageSquare, href: '/dashboard/announcements', color: '#014b89' }
+    { title: 'Leave Management', description: 'Review leaves & apply', icon: Calendar, href: '/dashboard/caretaker-leave', color: '#014b89' }
   ]
 
   return (
@@ -408,7 +408,8 @@ function AdminDashboard({ user }: { user: any }) {
   const adminTools = [
     { title: 'Analytics', description: 'System-wide metrics', icon: BarChart3, href: '/dashboard/analytics', color: '#014b89' },
     { title: 'Management', description: 'User & system control', icon: ClipboardList, href: '/dashboard/management', color: '#014b89' },
-    { title: 'Announcements', description: 'Broadcast messages', icon: MessageSquare, href: '/dashboard/announcements-manage', color: '#014b89' }
+    { title: 'Leave Management', description: 'Review caretaker leaves', icon: Calendar, href: '/dashboard/admin-leave-management', color: '#014b89' },
+    { title: 'Mess Management', description: 'Manage mess system', icon: UtensilsCrossed, href: '/dashboard/mess-management', color: '#014b89' }
   ]
 
   return (

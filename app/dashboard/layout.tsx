@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { LogOut, Menu, X, LayoutDashboard, AlertCircle, Bell, Search, Users, BarChart3, Settings, Home, UtensilsCrossed } from 'lucide-react'
+import { LogOut, Menu, X, LayoutDashboard, AlertCircle, Bell, Search, Users, BarChart3, Settings, Home, UtensilsCrossed, Calendar, ClipboardCheck, PlusCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
 export default function DashboardLayout({
@@ -54,7 +54,8 @@ export default function DashboardLayout({
           { href: '/dashboard/issues', label: 'Report Issue', icon: AlertCircle, color: '#014b89' },
           { href: '/dashboard/announcements', label: 'Announcements', icon: Bell, color: '#014b89' },
           { href: '/dashboard/lost-found', label: 'Lost & Found', icon: Search, color: '#014b89' },
-          { href: '/dashboard/mess', label: 'Mess', icon: UtensilsCrossed, color: '#014b89' }
+          { href: '/dashboard/mess', label: 'Mess', icon: UtensilsCrossed, color: '#014b89' },
+          { href: '/dashboard/student-leave', label: 'Leave', icon: Calendar, color: '#014b89' }
         ]
       case 'caretaker':
         return [
@@ -62,7 +63,8 @@ export default function DashboardLayout({
           { href: '/dashboard/issues', label: 'Manage Issues', icon: AlertCircle, color: '#014b89' },
           { href: '/dashboard/announcements', label: 'Announcements', icon: Bell, color: '#014b89' },
           { href: '/dashboard/residents', label: 'Residents', icon: Users, color: '#014b89' },
-          { href: '/dashboard/mess-management', label: 'Mess Management', icon: UtensilsCrossed, color: '#014b89' }
+          { href: '/dashboard/mess-management', label: 'Mess Management', icon: UtensilsCrossed, color: '#014b89' },
+          { href: '/dashboard/caretaker-leave', label: 'Leave', icon: Calendar, color: '#014b89' }
         ]
       case 'admin':
         return [
@@ -71,7 +73,8 @@ export default function DashboardLayout({
           { href: '/dashboard/announcements-manage', label: 'Announcements', icon: Bell, color: '#014b89' },
           { href: '/dashboard/management', label: 'Management', icon: Settings, color: '#014b89' },
           { href: '/dashboard/user-approvals', label: 'User Approvals', icon: Users, color: '#014b89' },
-          { href: '/dashboard/mess-management', label: 'Mess Management', icon: UtensilsCrossed, color: '#014b89' }
+          { href: '/dashboard/mess-management', label: 'Mess Management', icon: UtensilsCrossed, color: '#014b89' },
+          { href: '/dashboard/admin-leave-management', label: 'Leave Management', icon: Calendar, color: '#014b89' }
         ]
       default:
         return baseItems
