@@ -339,6 +339,7 @@ export default function CaretakerRegisterPage() {
                     onChange={handleChange}
                     className="w-full h-11 sm:h-12 px-3 sm:px-4 border-2 border-gray-200 rounded-xl focus:border-[#014b89] focus:ring-[#014b89] bg-white text-gray-900 font-medium transition-all text-sm sm:text-base"
                   >
+                    <option value="Warden">Warden</option>
                     <option value="Maintenance">Maintenance</option>
                     <option value="Housekeeping">Housekeeping</option>
                     <option value="Security">Security</option>
