@@ -47,7 +47,7 @@ export default function LandingPage() {
   const [scrollY, setScrollY] = useState(0)
   const [isInView, setIsInView] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const featuresRef = useRef(null)
+  const featuresRef = useRef<HTMLElement>(null)
 
   useEffect(() => {
     const handleScroll = () => {
