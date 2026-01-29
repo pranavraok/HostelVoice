@@ -47,7 +47,7 @@ export default function LandingPage() {
   const [scrollY, setScrollY] = useState(0)
   const [isInView, setIsInView] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const featuresRef = useRef(null)
+  const featuresRef = useRef<HTMLElement>(null)
 
   useEffect(() => {
     const handleScroll = () => {
@@ -263,12 +263,20 @@ export default function LandingPage() {
                     <ArrowRight className="ml-2 w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform" />
                   </Button>
                 </Link>
-                <Link href="/features" className="w-full sm:w-auto">
-                  <Button size="lg" variant="outline" className="w-full sm:w-auto border-2 hover:text-white font-semibold text-sm sm:text-base transition-all" style={{ borderColor: '#f26918', color: '#f26918' }} onMouseEnter={(e) => e.currentTarget.style.background = '#f26918'} onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}>
-                    Explore Features
-                    <Sparkles className="ml-2 w-4 h-4 sm:w-5 sm:h-5" />
-                  </Button>
-                </Link>
+                <Button 
+                  size="lg" 
+                  variant="outline" 
+                  className="w-full sm:w-auto border-2 hover:text-white font-semibold text-sm sm:text-base transition-all" 
+                  style={{ borderColor: '#f26918', color: '#f26918' }} 
+                  onMouseEnter={(e) => e.currentTarget.style.background = '#f26918'} 
+                  onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                  onClick={() => {
+                    featuresRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                  }}
+                >
+                  Explore Features
+                  <Sparkles className="ml-2 w-4 h-4 sm:w-5 sm:h-5" />
+                </Button>
               </div>
 
               {/* Trust Indicators */}

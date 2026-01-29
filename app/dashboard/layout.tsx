@@ -106,7 +106,7 @@ export default function DashboardLayout({
         <aside
           className={`${
             isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
-          } md:translate-x-0 transition-transform duration-300 ease-in-out w-72 sm:w-80 border-r-2 border-gray-200 bg-white fixed md:static h-full z-40 overflow-hidden flex-shrink-0`}
+          } md:translate-x-0 transition-transform duration-300 ease-in-out w-72 sm:w-80 border-r-2 border-gray-200 bg-white fixed md:static h-[calc(100vh-64px)] md:h-full top-[64px] md:top-0 z-40 overflow-hidden flex-shrink-0`}
         >
           <div className="h-full flex flex-col">
             {/* TOP SECTION - Fixed: Logo and User Profile */}
