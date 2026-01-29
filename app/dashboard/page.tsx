@@ -1,11 +1,14 @@
 'use client'
 
 import { useAuth } from '@/lib/auth-context'
-import { AlertCircle, TrendingUp, Users, MessageSquare, Zap, BarChart3, ClipboardList, ArrowRight, CheckCircle2, Loader2, Calendar, PlusCircle, UtensilsCrossed } from 'lucide-react'
+import { AlertCircle, TrendingUp, Users, MessageSquare, Zap, BarChart3, ClipboardList, ArrowRight, CheckCircle2, Loader2, Calendar, PlusCircle, UtensilsCrossed, BookOpen } from 'lucide-react'
 import Link from 'next/link'
 import { useState, useEffect, useCallback } from 'react'
 import { analyticsApi, issuesApi, announcementsApi, lostFoundApi, residentsApi, DashboardStats } from '@/lib/api'
 import { toast } from 'sonner'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { Button } from '@/components/ui/button'
+import { ScrollArea } from '@/components/ui/scroll-area'
 
 export default function DashboardPage() {
   const { user } = useAuth()
@@ -30,6 +33,7 @@ export default function DashboardPage() {
 
 function StudentDashboard({ user }: { user: any }) {
   const [loading, setLoading] = useState(true)
+  const [rulesOpen, setRulesOpen] = useState(false)
   const [stats, setStats] = useState([
     { label: 'Open Issues', value: '0', icon: AlertCircle, color: '#014b89', bgColor: 'rgba(1, 75, 137, 0.1)' },
     { label: 'Announcements', value: '0', icon: MessageSquare, color: '#014b89', bgColor: 'rgba(1, 75, 137, 0.1)' },
@@ -117,9 +121,129 @@ function StudentDashboard({ user }: { user: any }) {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 md:px-8 pt-4 sm:pt-6 md:pt-12 pb-12 sm:pb-16 md:pb-24 relative z-10">
         {/* Header - Mobile Optimized */}
         <div className="mb-6 sm:mb-8 md:mb-12 animate-fade-in">
-          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-1 sm:mb-2" style={{ color: '#014b89' }}>
-            Welcome back, {user.name}
-          </h1>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 mb-1 sm:mb-2">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold" style={{ color: '#014b89' }}>
+              Welcome back, {user.name}
+            </h1>
+            <Dialog open={rulesOpen} onOpenChange={setRulesOpen}>
+              <DialogTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="flex items-center gap-2 border-2 hover:shadow-lg transition-all duration-300 whitespace-nowrap"
+                  style={{ borderColor: '#014b89', color: '#014b89' }}
+                >
+                  <BookOpen className="w-4 h-4" />
+                  Rules & Regulations
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-3xl max-h-[80vh]">
+                <DialogHeader>
+                  <DialogTitle className="text-2xl font-bold" style={{ color: '#014b89' }}>
+                    Student Rules & Regulations
+                  </DialogTitle>
+                </DialogHeader>
+                <ScrollArea className="h-[60vh] pr-4">
+                  <div className="space-y-6 text-gray-700">
+                    <section>
+                      <h3 className="text-lg font-bold mb-3" style={{ color: '#014b89' }}>General Conduct</h3>
+                      <ul className="space-y-2 list-disc pl-5">
+                        <li>Maintain discipline and decorum within the hostel premises at all times</li>
+                        <li>Be respectful to fellow residents, caretakers, and hostel staff</li>
+                        <li>Use polite and appropriate language in all interactions</li>
+                        <li>Smoking, alcohol, and substance abuse are strictly prohibited</li>
+                        <li>Gambling and any form of betting are not allowed</li>
+                      </ul>
+                    </section>
+
+                    <section>
+                      <h3 className="text-lg font-bold mb-3" style={{ color: '#014b89' }}>Room Guidelines</h3>
+                      <ul className="space-y-2 list-disc pl-5">
+                        <li>Keep your room clean and well-maintained</li>
+                        <li>Do not damage hostel property or infrastructure</li>
+                        <li>Report any damages or maintenance issues immediately through the system</li>
+                        <li>Room inspections may be conducted periodically</li>
+                        <li>Do not make any structural modifications to your room</li>
+                        <li>Electrical appliances must comply with hostel safety regulations</li>
+                      </ul>
+                    </section>
+
+                    <section>
+                      <h3 className="text-lg font-bold mb-3" style={{ color: '#014b89' }}>Timings & Attendance</h3>
+                      <ul className="space-y-2 list-disc pl-5">
+                        <li>Hostel gates close at 10:00 PM on weekdays and 11:00 PM on weekends</li>
+                        <li>Late entry requires prior permission from the warden</li>
+                        <li>Maintain regular attendance during morning and evening roll calls</li>
+                        <li>Inform in advance if staying outside the hostel</li>
+                        <li>Submit leave applications through the system for approval</li>
+                      </ul>
+                    </section>
+
+                    <section>
+                      <h3 className="text-lg font-bold mb-3" style={{ color: '#014b89' }}>Visitor Policy</h3>
+                      <ul className="space-y-2 list-disc pl-5">
+                        <li>Visitors are allowed only in designated common areas</li>
+                        <li>Visitors must be registered at the reception with valid ID</li>
+                        <li>Visiting hours: 9:00 AM to 7:00 PM</li>
+                        <li>Overnight guests are not permitted</li>
+                        <li>Students are responsible for their visitors' conduct</li>
+                      </ul>
+                    </section>
+
+                    <section>
+                      <h3 className="text-lg font-bold mb-3" style={{ color: '#014b89' }}>Mess & Dining</h3>
+                      <ul className="space-y-2 list-disc pl-5">
+                        <li>Adhere to mess timings strictly</li>
+                        <li>Maintain cleanliness in the dining area</li>
+                        <li>Food wastage should be minimized</li>
+                        <li>Submit feedback and complaints through the mess management system</li>
+                        <li>Cooking in rooms is strictly prohibited</li>
+                      </ul>
+                    </section>
+
+                    <section>
+                      <h3 className="text-lg font-bold mb-3" style={{ color: '#014b89' }}>Safety & Security</h3>
+                      <ul className="space-y-2 list-disc pl-5">
+                        <li>Keep your room locked when leaving</li>
+                        <li>Do not share keys or access cards with others</li>
+                        <li>Report any suspicious activity immediately</li>
+                        <li>Keep valuables in safe custody</li>
+                        <li>Follow fire safety protocols and evacuation procedures</li>
+                        <li>Do not tamper with fire alarms or safety equipment</li>
+                      </ul>
+                    </section>
+
+                    <section>
+                      <h3 className="text-lg font-bold mb-3" style={{ color: '#014b89' }}>Use of HostelVoice System</h3>
+                      <ul className="space-y-2 list-disc pl-5">
+                        <li>Use the platform for all official communications</li>
+                        <li>Report issues through the issue tracking system</li>
+                        <li>Check announcements regularly for important updates</li>
+                        <li>Submit leave applications in advance</li>
+                        <li>Keep your profile information up to date</li>
+                        <li>Do not misuse the system or share login credentials</li>
+                      </ul>
+                    </section>
+
+                    <section>
+                      <h3 className="text-lg font-bold mb-3" style={{ color: '#014b89' }}>Consequences of Violation</h3>
+                      <ul className="space-y-2 list-disc pl-5">
+                        <li>First offense: Written warning</li>
+                        <li>Repeated violations: Fine or temporary suspension</li>
+                        <li>Serious violations: Termination of hostel accommodation</li>
+                        <li>Damage to property: Compensation and disciplinary action</li>
+                      </ul>
+                    </section>
+
+                    <div className="bg-blue-50 border-l-4 p-4 mt-6" style={{ borderColor: '#014b89' }}>
+                      <p className="text-sm font-semibold" style={{ color: '#014b89' }}>
+                        Note: These rules are subject to change. Updates will be communicated through the HostelVoice platform.
+                      </p>
+                    </div>
+                  </div>
+                </ScrollArea>
+              </DialogContent>
+            </Dialog>
+          </div>
           <p className="text-sm sm:text-base md:text-lg text-gray-600">Room {user.roomNumber} • {user.hostelName}</p>
         </div>
 
@@ -198,6 +322,7 @@ function StudentDashboard({ user }: { user: any }) {
 
 function CaretakerDashboard({ user }: { user: any }) {
   const [loading, setLoading] = useState(true)
+  const [rulesOpen, setRulesOpen] = useState(false)
   const [stats, setStats] = useState([
     { label: 'Active Issues', value: '0', icon: AlertCircle, color: '#014b89', bgColor: 'rgba(1, 75, 137, 0.1)' },
     { label: 'Residents', value: '0', icon: Users, color: '#014b89', bgColor: 'rgba(1, 75, 137, 0.1)' },
@@ -290,9 +415,159 @@ function CaretakerDashboard({ user }: { user: any }) {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 md:px-8 pt-4 sm:pt-6 md:pt-12 pb-12 sm:pb-16 md:pb-24 relative z-10">
         {/* Header - Mobile Optimized */}
         <div className="mb-6 sm:mb-8 md:mb-12 animate-fade-in">
-          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-1 sm:mb-2" style={{ color: '#014b89' }}>
-            Hostel Management
-          </h1>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 mb-1 sm:mb-2">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold" style={{ color: '#014b89' }}>
+              Hostel Management
+            </h1>
+            <Dialog open={rulesOpen} onOpenChange={setRulesOpen}>
+              <DialogTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="flex items-center gap-2 border-2 hover:shadow-lg transition-all duration-300 whitespace-nowrap"
+                  style={{ borderColor: '#014b89', color: '#014b89' }}
+                >
+                  <BookOpen className="w-4 h-4" />
+                  Rules & Regulations
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-3xl max-h-[80vh]">
+                <DialogHeader>
+                  <DialogTitle className="text-2xl font-bold" style={{ color: '#014b89' }}>
+                    Caretaker Guidelines & Responsibilities
+                  </DialogTitle>
+                </DialogHeader>
+                <ScrollArea className="h-[60vh] pr-4">
+                  <div className="space-y-6 text-gray-700">
+                    <section>
+                      <h3 className="text-lg font-bold mb-3" style={{ color: '#014b89' }}>Primary Responsibilities</h3>
+                      <ul className="space-y-2 list-disc pl-5">
+                        <li>Ensure the overall well-being and safety of all hostel residents</li>
+                        <li>Maintain discipline and order within the hostel premises</li>
+                        <li>Address resident concerns and complaints promptly</li>
+                        <li>Coordinate with maintenance, security, and other support staff</li>
+                        <li>Report serious incidents to the warden and administration immediately</li>
+                        <li>Conduct regular inspections of hostel facilities and rooms</li>
+                      </ul>
+                    </section>
+
+                    <section>
+                      <h3 className="text-lg font-bold mb-3" style={{ color: '#014b89' }}>Issue Management</h3>
+                      <ul className="space-y-2 list-disc pl-5">
+                        <li>Monitor and respond to all issues reported through the HostelVoice system</li>
+                        <li>Prioritize issues based on urgency and severity</li>
+                        <li>Resolve minor issues immediately or escalate to appropriate departments</li>
+                        <li>Update issue status and keep residents informed about progress</li>
+                        <li>Maintain detailed records of all issues and resolutions</li>
+                        <li>Follow up to ensure issues are completely resolved</li>
+                      </ul>
+                    </section>
+
+                    <section>
+                      <h3 className="text-lg font-bold mb-3" style={{ color: '#014b89' }}>Resident Management</h3>
+                      <ul className="space-y-2 list-disc pl-5">
+                        <li>Maintain accurate records of all residents and room allocations</li>
+                        <li>Conduct morning and evening attendance as per schedule</li>
+                        <li>Monitor student in/out timings and late entries</li>
+                        <li>Process leave applications and maintain leave records</li>
+                        <li>Address resident grievances fairly and promptly</li>
+                        <li>Foster a supportive and inclusive hostel environment</li>
+                      </ul>
+                    </section>
+
+                    <section>
+                      <h3 className="text-lg font-bold mb-3" style={{ color: '#014b89' }}>Facility Maintenance</h3>
+                      <ul className="space-y-2 list-disc pl-5">
+                        <li>Ensure cleanliness and hygiene in all common areas</li>
+                        <li>Monitor and report maintenance needs proactively</li>
+                        <li>Coordinate with maintenance staff for repairs and upkeep</li>
+                        <li>Conduct weekly inspections of electrical, plumbing, and other systems</li>
+                        <li>Ensure proper functioning of safety equipment (fire extinguishers, alarms)</li>
+                        <li>Manage inventory of cleaning supplies and hostel amenities</li>
+                      </ul>
+                    </section>
+
+                    <section>
+                      <h3 className="text-lg font-bold mb-3" style={{ color: '#014b89' }}>Security & Safety</h3>
+                      <ul className="space-y-2 list-disc pl-5">
+                        <li>Enforce hostel entry and exit timings strictly</li>
+                        <li>Maintain visitor logs and ensure visitor policy compliance</li>
+                        <li>Conduct regular security rounds, especially at night</li>
+                        <li>Report any security concerns or suspicious activities immediately</li>
+                        <li>Ensure all residents are aware of emergency procedures</li>
+                        <li>Coordinate emergency drills and evacuation procedures</li>
+                        <li>Keep emergency contact numbers readily accessible</li>
+                      </ul>
+                    </section>
+
+                    <section>
+                      <h3 className="text-lg font-bold mb-3" style={{ color: '#014b89' }}>Mess Coordination</h3>
+                      <ul className="space-y-2 list-disc pl-5">
+                        <li>Monitor mess operations and food quality</li>
+                        <li>Address resident feedback and complaints about meals</li>
+                        <li>Ensure mess cleanliness and hygiene standards</li>
+                        <li>Coordinate with mess staff for menu planning and improvements</li>
+                        <li>Report mess-related issues to administration</li>
+                        <li>Monitor food wastage and encourage responsible consumption</li>
+                      </ul>
+                    </section>
+
+                    <section>
+                      <h3 className="text-lg font-bold mb-3" style={{ color: '#014b89' }}>Communication & Documentation</h3>
+                      <ul className="space-y-2 list-disc pl-5">
+                        <li>Use the HostelVoice system for all official communications</li>
+                        <li>Post announcements for important updates and notices</li>
+                        <li>Maintain detailed logs of daily activities and incidents</li>
+                        <li>Submit regular reports to the warden and administration</li>
+                        <li>Keep resident contact information and emergency contacts updated</li>
+                        <li>Document all rule violations and disciplinary actions</li>
+                      </ul>
+                    </section>
+
+                    <section>
+                      <h3 className="text-lg font-bold mb-3" style={{ color: '#014b89' }}>Leave & Attendance</h3>
+                      <ul className="space-y-2 list-disc pl-5">
+                        <li>Submit your own leave applications through the system in advance</li>
+                        <li>Ensure proper handover to replacement caretaker during leave</li>
+                        <li>Coordinate with other caretakers for leave coverage</li>
+                        <li>Maintain professional availability during duty hours</li>
+                        <li>Respond promptly to emergency calls even during off-hours</li>
+                      </ul>
+                    </section>
+
+                    <section>
+                      <h3 className="text-lg font-bold mb-3" style={{ color: '#014b89' }}>Professional Conduct</h3>
+                      <ul className="space-y-2 list-disc pl-5">
+                        <li>Maintain professional and respectful behavior with all residents</li>
+                        <li>Treat all residents equally without bias or favoritism</li>
+                        <li>Maintain confidentiality of resident information</li>
+                        <li>Dress appropriately and maintain professional appearance</li>
+                        <li>Avoid conflicts of interest in hostel matters</li>
+                        <li>Participate in training and development programs</li>
+                      </ul>
+                    </section>
+
+                    <section>
+                      <h3 className="text-lg font-bold mb-3" style={{ color: '#014b89' }}>Emergency Procedures</h3>
+                      <ul className="space-y-2 list-disc pl-5">
+                        <li>Be familiar with all emergency protocols and evacuation routes</li>
+                        <li>Keep first aid kit readily accessible and well-stocked</li>
+                        <li>Contact medical services immediately in case of health emergencies</li>
+                        <li>Notify police and administration for serious incidents</li>
+                        <li>Document all emergencies and actions taken</li>
+                        <li>Coordinate with security for crisis management</li>
+                      </ul>
+                    </section>
+
+                    <div className="bg-blue-50 border-l-4 p-4 mt-6" style={{ borderColor: '#014b89' }}>
+                      <p className="text-sm font-semibold" style={{ color: '#014b89' }}>
+                        Note: Failure to fulfill responsibilities may result in disciplinary action. Always prioritize resident safety and welfare.
+                      </p>
+                    </div>
+                  </div>
+                </ScrollArea>
+              </DialogContent>
+            </Dialog>
+          </div>
           <p className="text-sm sm:text-base md:text-lg text-gray-600">{user.hostelName} • Caretaker Dashboard</p>
         </div>
 
