@@ -204,17 +204,29 @@ export default function AdminLeaveManagementPage() {
   };
 
   // Calendar Functions - use API data or fallback to local calculation
-  const getCalendarDays = (): CalendarDay[] => {
-    if (calendarData.length > 0) {
-      return calendarData;
-    }
-    
-    // Fallback: Calculate locally from caretakerLeaves
+  const getCalendarDays = (): (CalendarDay | null)[] => {
     const monthStart = startOfMonth(currentMonth);
     const monthEnd = endOfMonth(currentMonth);
     const days = eachDayOfInterval({ start: monthStart, end: monthEnd });
-
-    return days.map(date => {
+    
+    // Build complete month data - always generate all days
+    const daysWithData: CalendarDay[] = days.map(date => {
+      // Try to find matching day from API data
+      let dayData: CalendarDay | undefined;
+      
+      if (calendarData.length > 0) {
+        dayData = calendarData.find(day => {
+          const apiDate = typeof day.date === 'string' ? new Date(day.date) : day.date;
+          return isSameDay(apiDate, date);
+        });
+      }
+      
+      // If we have API data for this day, use it
+      if (dayData) {
+        return dayData;
+      }
+      
+      // Otherwise, calculate from caretakerLeaves
       const leavesOnDay = caretakerLeaves.filter(leave => {
         const matchesFilter = filterCaretaker === 'all' || (leave.caretaker_block && leave.caretaker_block.includes(filterCaretaker));
         const startDate = new Date(leave.start_date);
@@ -235,6 +247,23 @@ export default function AdminLeaveManagementPage() {
         staffingPercentage: Math.round((available / total) * 100)
       };
     });
+    
+    // Now create the calendar grid with proper alignment
+    const startDayOfWeek = monthStart.getDay(); // 0 = Sunday, 1 = Monday, etc.
+    
+    // Add empty cells for days before the month starts
+    const calendarGrid: (CalendarDay | null)[] = Array(startDayOfWeek).fill(null);
+    
+    // Add the actual days (should match the number of days in the month)
+    calendarGrid.push(...daysWithData);
+    
+    // Add empty cells to complete the last row (optional, but makes grid look cleaner)
+    const remainingCells = 7 - (calendarGrid.length % 7);
+    if (remainingCells < 7) {
+      calendarGrid.push(...Array(remainingCells).fill(null));
+    }
+    
+    return calendarGrid;
   };
 
   const getStaffingColor = (availableCaretakers: number, totalCaretakers: number) => {
@@ -658,6 +687,16 @@ export default function AdminLeaveManagementPage() {
 
                 <div className="grid grid-cols-7 gap-1 sm:gap-2">
                   {calendarDays.map((day, idx) => {
+                    // Handle empty cells (days outside current month)
+                    if (!day) {
+                      return (
+                        <div
+                          key={`empty-${idx}`}
+                          className="aspect-square p-1 sm:p-2 bg-gray-50"
+                        />
+                      );
+                    }
+                    
                     const dateObj = typeof day.date === 'string' ? new Date(day.date) : day.date;
                     const staffingColor = getStaffingColor(day.availableCaretakers, day.totalCaretakers);
                     const isToday = isSameDay(dateObj, new Date());
