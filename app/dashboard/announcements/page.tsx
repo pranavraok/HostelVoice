@@ -335,15 +335,30 @@ export default function AnnouncementsPage() {
                 return (
                   <div
                     key={announcement.id}
-                    className="bg-white border-2 rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 hover:shadow-xl transition-all duration-300 animate-fade-in"
+                    className="bg-white border-2 rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 hover:shadow-xl transition-all duration-300 animate-fade-in relative overflow-visible"
                     style={{ 
                       borderColor: 'rgba(242, 105, 24, 0.3)',
                       background: 'linear-gradient(to right, rgba(242, 105, 24, 0.05), transparent)',
                       animationDelay: `${index * 0.1}s`
                     }}
                   >
+                    {/* IMPORTANT Badge - Top Right Corner */}
+                    <span 
+                      className="absolute -top-3 -right-3 px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl text-sm sm:text-base font-extrabold uppercase tracking-wider z-10 transform rotate-3"
+                      style={{ 
+                        background: '#f26918',
+                        color: 'white',
+                        borderColor: 'white',
+                        borderWidth: '3px',
+                        borderStyle: 'solid',
+                        boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.3)'
+                      }}
+                    >
+                      IMPORTANT
+                    </span>
+
                     <div className="flex items-start justify-between mb-3 sm:mb-4">
-                      <div className="flex-1 min-w-0">
+                      <div className="flex-1 min-w-0 pr-24">
                         <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
                           <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: 'rgba(242, 105, 24, 0.15)' }}>
                             <Megaphone className="w-4 h-4 sm:w-5 sm:h-5" style={{ color: '#f26918' }} />
@@ -368,11 +383,11 @@ export default function AnnouncementsPage() {
                       </span>
                       {announcement.creator && (
                         <span className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl text-xs sm:text-sm bg-gray-100 text-gray-700 font-semibold border-2 border-gray-200">
-                          👤 {announcement.creator.full_name || 'Staff'}
+                          {announcement.creator.full_name || 'Staff'}
                         </span>
                       )}
                       <span className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl text-xs sm:text-sm bg-gray-100 text-gray-700 font-semibold border-2 border-gray-200">
-                        📅 {new Date(announcement.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
+                        {new Date(announcement.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
                       </span>
                       {(user.role === 'caretaker' || user.role === 'admin') && (
                         <div className="flex gap-2 ml-auto">
@@ -448,11 +463,11 @@ export default function AnnouncementsPage() {
                       </span>
                       {announcement.creator && (
                         <span className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl text-xs sm:text-sm bg-gray-100 text-gray-700 font-semibold border-2 border-gray-200">
-                          👤 {announcement.creator.full_name || 'Staff'}
+                          {announcement.creator.full_name || 'Staff'}
                         </span>
                       )}
                       <span className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl text-xs sm:text-sm bg-gray-100 text-gray-700 font-semibold border-2 border-gray-200">
-                        📅 {new Date(announcement.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
+                        {new Date(announcement.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
                       </span>
                       {(user.role === 'caretaker' || user.role === 'admin') && (
                         <div className="flex gap-2 ml-auto">
