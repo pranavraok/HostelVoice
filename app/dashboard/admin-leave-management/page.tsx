@@ -625,7 +625,20 @@ export default function AdminLeaveManagementPage() {
                     </h3>
                     <p className="text-xs sm:text-sm text-gray-600">Staff leave calendar and staffing levels</p>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        fetchCalendarData();
+                        fetchCaretakerLeaves();
+                      }}
+                      disabled={isLoadingCalendar || isRefreshing}
+                      className="gap-2 border-2 h-9 px-3"
+                    >
+                      <RefreshCw className={`h-4 w-4 ${isLoadingCalendar || isRefreshing ? 'animate-spin' : ''}`} />
+                      <span className="hidden sm:inline">Refresh</span>
+                    </Button>
                     <Button
                       variant="outline"
                       size="sm"

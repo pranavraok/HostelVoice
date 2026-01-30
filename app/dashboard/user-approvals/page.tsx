@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Check, X, Clock, User, Mail, Phone, Building, Loader2, AlertCircle, CheckCircle, UserCheck, Shield } from 'lucide-react'
+import { Check, X, Clock, User, Mail, Phone, Building, Loader2, AlertCircle, CheckCircle, UserCheck, Shield, RefreshCw } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import {
   AlertDialog,
@@ -42,6 +42,7 @@ export default function UserApprovalsPage() {
   
   const [pendingUsers, setPendingUsers] = useState<PendingUser[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [isRefreshing, setIsRefreshing] = useState(false)
   const [actionLoading, setActionLoading] = useState<string | null>(null)
   const [selectedUser, setSelectedUser] = useState<PendingUser | null>(null)
   const [showRejectDialog, setShowRejectDialog] = useState(false)
@@ -55,8 +56,12 @@ export default function UserApprovalsPage() {
   }, [user, router])
 
   // Fetch pending users
-  const fetchPendingUsers = async () => {
-    setIsLoading(true)
+  const fetchPendingUsers = async (isRefresh = false) => {
+    if (isRefresh) {
+      setIsRefreshing(true)
+    } else {
+      setIsLoading(true)
+    }
     try {
       const response = await adminApi.getPendingUsers()
       setPendingUsers((response.data as PendingUser[]) || [])
@@ -69,6 +74,7 @@ export default function UserApprovalsPage() {
       })
     } finally {
       setIsLoading(false)
+      setIsRefreshing(false)
     }
   }
 
@@ -195,15 +201,27 @@ export default function UserApprovalsPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 pt-4 sm:pt-6 md:pt-12 pb-12 sm:pb-16 md:pb-24 relative z-10">
         {/* Header */}
         <div className="mb-6 sm:mb-8 md:mb-12 animate-fade-in">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl flex items-center justify-center shadow-lg" style={{ background: 'linear-gradient(135deg, #014b89 0%, #0369a1 100%)' }}>
-              <UserCheck className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 mb-2">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl flex items-center justify-center shadow-lg" style={{ background: 'linear-gradient(135deg, #014b89 0%, #0369a1 100%)' }}>
+                <UserCheck className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
+              </div>
+              <div>
+                <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold" style={{ color: '#014b89' }}>
+                  User Approvals
+                </h1>
+              </div>
             </div>
-            <div>
-              <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold" style={{ color: '#014b89' }}>
-                User Approvals
-              </h1>
-            </div>
+            <Button
+              onClick={() => fetchPendingUsers(true)}
+              variant="outline"
+              className="gap-2 h-11 sm:h-12 rounded-xl font-semibold border-2 text-sm sm:text-base w-full sm:w-auto"
+              style={{ borderColor: '#014b89', color: '#014b89' }}
+              disabled={isRefreshing}
+            >
+              <RefreshCw className={`w-4 h-4 sm:w-5 sm:h-5 ${isRefreshing ? 'animate-spin' : ''}`} />
+              Refresh
+            </Button>
           </div>
           <p className="text-sm sm:text-base md:text-lg text-gray-600 ml-0 sm:ml-[68px]">
             Review and approve pending registrations
