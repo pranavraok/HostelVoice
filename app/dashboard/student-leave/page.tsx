@@ -433,11 +433,25 @@ export default function StudentLeavePage() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 pt-4 sm:pt-6 md:pt-12 pb-12 sm:pb-16 md:pb-24 relative z-10">
         {/* Header */}
-        <div className="mb-6 sm:mb-8 md:mb-12 animate-fade-in">
-          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-1 sm:mb-2" style={{ color: '#014b89' }}>
-            Leave Management
-          </h1>
-          <p className="text-sm sm:text-base md:text-lg text-gray-600">Apply for leave and track your requests</p>
+        <div className="flex flex-col gap-3 sm:gap-4 mb-6 sm:mb-8 md:mb-12 animate-fade-in">
+          <div>
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-1 sm:mb-2" style={{ color: '#014b89' }}>
+              Leave Management
+            </h1>
+            <p className="text-sm sm:text-base md:text-lg text-gray-600">Apply for leave and track your requests</p>
+          </div>
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
+            <Button
+              onClick={handleRefresh}
+              variant="outline"
+              className="gap-2 h-11 sm:h-12 rounded-xl font-semibold border-2 text-sm sm:text-base"
+              style={{ borderColor: '#014b89', color: '#014b89' }}
+              disabled={isRefreshing}
+            >
+              <RefreshCw className={`w-4 h-4 sm:w-5 sm:h-5 ${isRefreshing ? 'animate-spin' : ''}`} />
+              Refresh
+            </Button>
+          </div>
         </div>
 
         {/* Tabs */}
@@ -461,20 +475,6 @@ export default function StudentLeavePage() {
 
           {/* My Leaves Tab */}
           <TabsContent value="my-leaves" className="space-y-4 sm:space-y-6 mt-0">
-            {/* Refresh Button */}
-            <div className="flex justify-end">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleRefresh}
-                disabled={isRefreshing}
-                className="border-2 gap-2"
-                style={{ borderColor: '#014b89', color: '#014b89' }}
-              >
-                <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
-                Refresh
-              </Button>
-            </div>
 
             {/* Summary Cards */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">

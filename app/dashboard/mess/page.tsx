@@ -21,7 +21,8 @@ import {
   Cookie,
   UtensilsCrossed,
   Loader2,
-  AlertCircle
+  AlertCircle,
+  RefreshCw
 } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/lib/auth-context";
@@ -58,31 +59,32 @@ export default function MessPage() {
   const [photos, setPhotos] = useState<File[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Load weekly menu function (to be reused for refresh)
+  const loadMenu = async () => {
+    if (!user?.hostelName) return;
+    
+    setIsLoadingMenu(true);
+    setMenuError(null);
+    
+    try {
+      const menu = await getCurrentWeeklyMenu(user.hostelName);
+      setWeeklyMenu(menu);
+      
+      // Set initial selected day menu
+      if (menu && selectedDate) {
+        const dayName = daysOfWeek[selectedDate.getDay()];
+        setSelectedDayMenu(menu.meals[dayName] || null);
+      }
+    } catch (error) {
+      console.error('[MessPage] Error loading menu:', error);
+      setMenuError('Failed to load menu');
+    } finally {
+      setIsLoadingMenu(false);
+    }
+  };
+
   // Load weekly menu on mount
   useEffect(() => {
-    async function loadMenu() {
-      if (!user?.hostelName) return;
-      
-      setIsLoadingMenu(true);
-      setMenuError(null);
-      
-      try {
-        const menu = await getCurrentWeeklyMenu(user.hostelName);
-        setWeeklyMenu(menu);
-        
-        // Set initial selected day menu
-        if (menu && selectedDate) {
-          const dayName = daysOfWeek[selectedDate.getDay()];
-          setSelectedDayMenu(menu.meals[dayName] || null);
-        }
-      } catch (error) {
-        console.error('[MessPage] Error loading menu:', error);
-        setMenuError('Failed to load menu');
-      } finally {
-        setIsLoadingMenu(false);
-      }
-    }
-    
     loadMenu();
   }, [user?.hostelName]);
 
@@ -94,9 +96,46 @@ export default function MessPage() {
     }
   }, [selectedDate, weeklyMenu]);
 
-  const handleDownloadPDF = () => {
+  const handleDownloadPDF = async () => {
     if (weeklyMenu?.menu_image_url) {
-      window.open(weeklyMenu.menu_image_url, '_blank');
+      try {
+        toast.success("Starting download...");
+        
+        // Fetch the image with proper headers
+        const response = await fetch(weeklyMenu.menu_image_url, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/octet-stream',
+          },
+        });
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch menu image');
+        }
+        
+        // Get the blob data
+        const blob = await response.blob();
+        
+        // Create object URL from blob
+        const url = window.URL.createObjectURL(blob);
+        
+        // Create anchor element and trigger download
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `weekly-menu-${user?.hostelName || 'hostel'}-${new Date().toISOString().split('T')[0]}.jpg`;
+        document.body.appendChild(link);
+        link.click();
+        
+        // Clean up
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+        
+        toast.success("Menu downloaded successfully!");
+      } catch (error) {
+        console.error('Download error:', error);
+        toast.error("Download failed. Opening menu in new tab...");
+        window.open(weeklyMenu.menu_image_url, '_blank');
+      }
     } else {
       toast.error("No menu image available for download");
     }
@@ -239,11 +278,25 @@ export default function MessPage() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 pt-4 sm:pt-6 md:pt-12 pb-12 sm:pb-16 md:pb-24 relative z-10">
         {/* Header */}
-        <div className="mb-6 sm:mb-8 md:mb-12 animate-fade-in">
-          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-1 sm:mb-2" style={{ color: '#014b89' }}>
-            Mess
-          </h1>
-          <p className="text-sm sm:text-base md:text-lg text-gray-600">View menu and submit feedback</p>
+        <div className="flex flex-col gap-3 sm:gap-4 mb-6 sm:mb-8 md:mb-12 animate-fade-in">
+          <div>
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-1 sm:mb-2" style={{ color: '#014b89' }}>
+              Mess
+            </h1>
+            <p className="text-sm sm:text-base md:text-lg text-gray-600">View menu and submit feedback</p>
+          </div>
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
+            <Button
+              onClick={loadMenu}
+              variant="outline"
+              className="gap-2 h-11 sm:h-12 rounded-xl font-semibold border-2 text-sm sm:text-base"
+              style={{ borderColor: '#014b89', color: '#014b89' }}
+              disabled={isLoadingMenu}
+            >
+              <RefreshCw className={`w-4 h-4 sm:w-5 sm:h-5 ${isLoadingMenu ? 'animate-spin' : ''}`} />
+              Refresh
+            </Button>
+          </div>
         </div>
 
         {/* Tabs */}
